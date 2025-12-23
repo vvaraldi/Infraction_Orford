@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Infractions Mont Orford</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <div class="nav-logo">🚨 Infractions</div>
+      <div class="nav-links">
+        <a href="../index.html">Rapport</a>
+        <a href="login.html" class="active">Connexion</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+    </nav>
+    
+    <!-- Mobile menu -->
+    <div class="mobile-nav" id="mobile-nav">
+      <div class="mobile-nav-header">
+        <div class="logo">🚨 Infractions</div>
+        <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+      </div>
+      <div class="mobile-nav-links">
+        <a href="../index.html">Rapport</a>
+        <a href="login.html" class="active">Connexion</a>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main content -->
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1 class="auth-title">🚨 Infractions</h1>
+        <p class="auth-subtitle">Mont Orford - Connexion</p>
+      </div>
+      
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="email">Courriel</label>
+          <input type="email" class="form-input" id="email" placeholder="votre@courriel.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="password">Mot de passe</label>
+          <input type="password" class="form-input" id="password" placeholder="Votre mot de passe" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">
+          Se connecter
+        </button>
+      </form>
+      
+      <div class="status-messages">
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+        <div id="success-message" class="alert alert-success" style="display: none;"></div>
+      </div>
+      
+      <div class="auth-footer">
+        <a href="https://trail-inspection.web.app" target="_blank" class="auth-link">
+          🏔️ Accéder à Ski-Track
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  
+  <!-- Application Scripts -->
+  <script src="../js/common.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/login.js"></script>
+</body>
+</html>
