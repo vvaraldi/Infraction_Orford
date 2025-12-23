@@ -13,37 +13,35 @@ Create a database of infractions, with two type of access :
 	- One page with the list of users to manage it (Create, delete, modify in a modal view)
 
 Infractions should have the following fields:
-- interceptor name (automatically filled in the survey mode due to login used and can't be modified)
-- interceptor ID (for data base only... not displayd on the survey page)
-- date (automatically filled in the survey mode)
-- TimeStampOffence (automatically filled in the survey mode)
-- trail (should be part of a list pre loaded)... drop down menu in the survey
-- Off pist (by default unchecked (so false) when survey )
-- type of practise (drop down of a list of practise)
-- Infraction type (text to be typed in)
-- Image of the pass of the person intercepted (take picture with the phone to add automatically in the survey)
-- CreationDate (time stamp at the creation... not modifiable)
+- PatrolName (automatically filled in the survey mode due to login used and can't be modified)
+- PatrolID (for data base only... not displayd on the survey page)
+- TimeStampOffence (automatically filled in the survey mode with two field : date and hours but can be modified)
+- OffenderName of the person intercepted
+- OffenderImage (Patrol can take picture with the phone to add automatically in the survey)
+- OffenceType (text to be typed in)
+- Trail (should be part of a list pre loaded)... drop down menu in the survey
+- OffPist (by default unchecked (so false) when survey )
+- Practise (drop down of a list of practise)
+- TimeStampCreation (time stamp at the creation... not modifiable)
 - TimeStampModification (Time stamp = creation date at creation and then modified to the latest modification by the inspector)
-- Name of the person intercepted
 - Archived (true or false managed by admin)
-- TimeStampArchivedAdmin (Date at which the admin has archived it)
 - CommentsAndSanctionAdmin (text managed by admin)
 - TimeStampModificationAdmin (Date at which the admin has modified the surveys in the sanction field only)
+- TimeStampArchivedAdmin (Date at which the admin has archived it)
 
 
 Two list for drop down :
 1 - Trails (list of possible ski trails + ski lifts from Mont Orford ) 
-	- 
+	- ...
 2 - Practises
 	- Ski alpin
-	- Snowboard
+	- Planche
 	- Randonnée alpine
 	- Randonnée pédestre
+	- Autres...
 
 One list for the users
 	- User name
 	- Type (Admin or Patrol)
 	- TimeStampCreation
 	- TimeStampModification (= creation to start)
-	
-	
