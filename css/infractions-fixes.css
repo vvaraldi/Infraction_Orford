@@ -1,0 +1,856 @@
+/* ========================================
+   infractions-fixes.css
+   Fixes for layout, menu, and desktop display
+   ======================================== */
+
+/* ========================================
+   FIX 1: Mobile nav should NEVER show on desktop
+   ======================================== */
+.mobile-nav {
+  display: none !important;
+}
+
+.mobile-nav.active {
+  display: flex !important;
+}
+
+/* Only show mobile menu button on mobile */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block !important;
+  }
+  
+  .nav-links {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-links {
+    display: flex !important;
+  }
+  
+  .mobile-menu-btn {
+    display: none !important;
+  }
+  
+  .mobile-nav {
+    display: none !important;
+  }
+  
+  .mobile-nav.active {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   FIX 2: Better desktop layout - centered, wider
+   ======================================== */
+.main {
+  min-height: calc(100vh - 60px);
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.infraction-main,
+.admin-main {
+  max-width: 1100px;
+}
+
+/* Page header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--theme-border, #e5e7eb);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--theme-text, #1f2937);
+  margin: 0;
+}
+
+.user-info {
+  font-size: 0.875rem;
+  color: var(--theme-text-light, #6b7280);
+}
+
+/* ========================================
+   FIX 3: Cards with better spacing
+   ======================================== */
+.card {
+  background: var(--theme-surface, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--color-gray-50, #f9fafb);
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--theme-text, #1f2937);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  padding: 1rem 1.5rem;
+  background: var(--color-gray-50, #f9fafb);
+  border-top: 1px solid var(--theme-border, #e5e7eb);
+}
+
+/* ========================================
+   FIX 4: Form sections with better visual hierarchy
+   ======================================== */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.form-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--theme-primary, #2563eb);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Form rows for side-by-side fields */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row.two-cols > .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-text, #1f2937);
+  margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--theme-border, #d1d5db);
+  border-radius: 8px;
+  background: var(--theme-surface, #ffffff);
+  color: var(--theme-text, #1f2937);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--theme-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:disabled,
+.form-select:disabled {
+  background: var(--color-gray-100, #f3f4f6);
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ========================================
+   FIX 5: Buttons with better styling
+   ======================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-lg {
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.btn-primary {
+  background: var(--theme-primary, #2563eb);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--theme-text, #1f2937);
+  border: 1px solid var(--theme-border, #d1d5db);
+}
+
+.btn-secondary:hover {
+  background: var(--color-gray-200, #e5e7eb);
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+}
+
+.btn:disabled,
+.btn.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   FIX 6: Tabs styling
+   ======================================== */
+.tabs-container {
+  margin-bottom: 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  background: var(--theme-surface, #ffffff);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-text-light, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--theme-text, #1f2937);
+  background: var(--color-gray-100, #f3f4f6);
+}
+
+.tab-btn.active {
+  background: var(--theme-primary, #2563eb);
+  color: white;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ========================================
+   FIX 7: Tables for admin
+   ======================================== */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--theme-text-light, #6b7280);
+  background: var(--color-gray-50, #f9fafb);
+  border-bottom: 2px solid var(--theme-border, #e5e7eb);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
+  color: var(--theme-text, #1f2937);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+  background: var(--color-gray-50, #f9fafb);
+}
+
+.data-table .text-center {
+  text-align: center;
+}
+
+.data-table .text-danger {
+  color: #dc2626;
+}
+
+/* ========================================
+   FIX 8: Badges
+   ======================================== */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-primary {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge-secondary {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--theme-text-light, #6b7280);
+}
+
+.badge-success {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* ========================================
+   FIX 9: Modals
+   ======================================== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--theme-surface, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-large {
+  max-width: 700px;
+}
+
+.modal-small {
+  max-width: 400px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--theme-text-light, #6b7280);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--theme-text, #1f2937);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--theme-border, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   FIX 10: Infraction details in modal
+   ======================================== */
+.infraction-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-section h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--theme-text-light, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detail-list li {
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+}
+
+.detail-list li strong {
+  color: var(--theme-text-light, #6b7280);
+  font-weight: 500;
+}
+
+.detail-list-small {
+  font-size: 0.75rem;
+  color: var(--theme-text-light, #6b7280);
+}
+
+.infraction-description {
+  background: var(--color-gray-50, #f9fafb);
+  padding: 1rem;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  font-size: 0.875rem;
+}
+
+.infraction-photo {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.infraction-photo:hover {
+  transform: scale(1.02);
+}
+
+/* ========================================
+   FIX 11: Photo preview
+   ======================================== */
+.photo-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.photo-capture-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ========================================
+   FIX 12: Checkbox styling
+   ======================================== */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+/* ========================================
+   FIX 13: Loading screen
+   ======================================== */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--theme-surface, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-gray-200, #e5e7eb);
+  border-top-color: var(--theme-primary, #2563eb);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   FIX 14: Status messages
+   ======================================== */
+.status-messages {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 400px;
+}
+
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.alert-success {
+  background: #d1fae5;
+  color: #065f46;
+  border-left: 4px solid #059669;
+}
+
+.alert-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-left: 4px solid #dc2626;
+}
+
+.alert-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border-left: 4px solid #f59e0b;
+}
+
+.alert-info {
+  background: #dbeafe;
+  color: #1e40af;
+  border-left: 4px solid #2563eb;
+}
+
+/* ========================================
+   FIX 15: Header improvements
+   ======================================== */
+.header {
+  background: var(--theme-primary, #1e40af);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.nav-links a.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ========================================
+   FIX 16: Mobile navigation overlay
+   ======================================== */
+.mobile-nav {
+  position: fixed;
+  inset: 0;
+  background: var(--theme-primary, #1e40af);
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.mobile-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobile-nav-header .logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.mobile-nav-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.25rem;
+}
+
+.mobile-nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ========================================
+   FIX 17: Form help text
+   ======================================== */
+.form-help {
+  font-size: 0.75rem;
+  color: var(--theme-text-light, #6b7280);
+  margin-top: 0.25rem;
+}
+
+/* ========================================
+   Responsive adjustments
+   ======================================== */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-row.two-cols > .form-group {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    min-width: auto;
+  }
+  
+  .status-messages {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}

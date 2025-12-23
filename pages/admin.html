@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administration - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
 </head>
 
@@ -44,23 +45,21 @@
   </div>
   
   <!-- Main content -->
-  <div id="main-content" class="main" style="display: none;">
-    
-    <!-- Quick link to Ski-Track -->
-    <div class="quick-link-bar">
-      <a href="https://trail-inspection.web.app" target="_blank" class="quick-link">
-        🏔️ Accéder à Ski-Track →
-      </a>
-    </div>
+  <div id="main-content" class="main admin-main" style="display: none;">
     
     <div class="page-header">
       <h1 class="page-title">Administration</h1>
+      <div class="user-info">
+        Connecté: <strong id="admin-name"></strong>
+      </div>
     </div>
     
     <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="infractions">📋 Infractions</button>
-      <button class="tab-btn" data-tab="users">👥 Utilisateurs</button>
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="infractions">📋 Infractions</button>
+        <button class="tab-btn" data-tab="users">👥 Utilisateurs</button>
+      </div>
     </div>
     
     <!-- Infractions Tab -->
@@ -76,7 +75,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="table-container">
+          <div class="table-responsive">
             <table class="data-table" id="infractions-table">
               <thead>
                 <tr>
@@ -107,7 +106,7 @@
           <button class="btn btn-primary" id="add-user-btn">+ Ajouter un utilisateur</button>
         </div>
         <div class="card-body">
-          <div class="table-container">
+          <div class="table-responsive">
             <table class="data-table" id="users-table">
               <thead>
                 <tr>
@@ -129,13 +128,16 @@
       </div>
     </div>
     
+    <!-- Status messages -->
+    <div id="status-messages" class="status-messages"></div>
+    
   </div>
   
   <!-- Infraction Detail Modal -->
   <div class="modal" id="infraction-modal">
     <div class="modal-content modal-large">
       <div class="modal-header">
-        <h2 class="modal-title">Détails de l'infraction</h2>
+        <h3 class="modal-title">Détails de l'infraction</h3>
         <button class="modal-close" id="close-infraction-modal">✕</button>
       </div>
       <div class="modal-body" id="infraction-modal-body">
@@ -153,7 +155,7 @@
   <div class="modal" id="user-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="user-modal-title">Ajouter un utilisateur</h2>
+        <h3 class="modal-title" id="user-modal-title">Nouvel utilisateur</h3>
         <button class="modal-close" id="close-user-modal">✕</button>
       </div>
       <div class="modal-body">
@@ -169,6 +171,7 @@
           <div class="form-group" id="password-group">
             <label class="form-label" for="user-password">Mot de passe</label>
             <input type="password" class="form-input" id="user-password" minlength="6">
+            <small class="form-help">Minimum 6 caractères</small>
           </div>
           <div class="form-group">
             <label class="form-label" for="user-role">Rôle</label>
@@ -197,7 +200,7 @@
   <div class="modal" id="delete-modal">
     <div class="modal-content modal-small">
       <div class="modal-header">
-        <h2 class="modal-title">Confirmation</h2>
+        <h3 class="modal-title">Confirmer la suppression</h3>
         <button class="modal-close" id="close-delete-modal">✕</button>
       </div>
       <div class="modal-body">
@@ -205,7 +208,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="cancel-delete-btn">Annuler</button>
-        <button class="btn btn-danger" id="confirm-delete-btn">Supprimer</button>
+        <button class="btn btn-danger" id="confirm-delete-btn">🗑️ Supprimer</button>
       </div>
     </div>
   </div>
@@ -219,6 +222,7 @@
   <!-- Application Scripts -->
   <script src="../js/common.js"></script>
   <script src="../js/auth.js"></script>
+  <script src="../js/trails-data.js"></script>
   <script src="../js/admin.js"></script>
 </body>
 </html>

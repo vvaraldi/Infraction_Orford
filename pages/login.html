@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
 </head>
 
@@ -41,7 +42,7 @@
         <p class="auth-subtitle">Mont Orford - Connexion</p>
       </div>
       
-      <form id="loginForm" class="auth-form">
+      <form id="login-form" class="auth-form">
         <div class="form-group">
           <label class="form-label" for="email">Courriel</label>
           <input type="email" class="form-input" id="email" placeholder="votre@courriel.com" required>
@@ -52,7 +53,7 @@
           <input type="password" class="form-input" id="password" placeholder="Votre mot de passe" required>
         </div>
         
-        <button type="submit" class="btn btn-primary btn-full">
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
           Se connecter
         </button>
       </form>
@@ -60,12 +61,6 @@
       <div class="status-messages">
         <div id="error-message" class="alert alert-danger" style="display: none;"></div>
         <div id="success-message" class="alert alert-success" style="display: none;"></div>
-      </div>
-      
-      <div class="auth-footer">
-        <a href="https://trail-inspection.web.app" target="_blank" class="auth-link">
-          🏔️ Accéder à Ski-Track
-        </a>
       </div>
     </div>
   </div>
