@@ -6,6 +6,40 @@
   <title>Administration - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
+  <style>
+    /* Sort controls styling */
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0;
+    }
+    
+    .sort-controls .form-label {
+      margin-bottom: 0;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .sort-controls .form-select {
+      max-width: 280px;
+    }
+    
+    /* Responsive sort controls */
+    @media (max-width: 576px) {
+      .sort-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .sort-controls .form-select {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -70,9 +104,9 @@
         </div>
         <div class="card-body">
           <!-- Sort controls -->
-          <div class="sort-controls" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <label class="form-label" for="sort-by" style="margin-bottom: 0; white-space: nowrap;">Trier par :</label>
-            <select class="form-select" id="sort-by" style="max-width: 250px;">
+          <div class="sort-controls">
+            <label class="form-label" for="sort-by">Trier par :</label>
+            <select class="form-select" id="sort-by">
               <option value="date">Date (plus récent en premier)</option>
               <option value="offender">Contrevenant (A → Z)</option>
             </select>

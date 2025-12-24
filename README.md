@@ -1,16 +1,9 @@
 # Infractions_Orford
 
 
-
 Photo de la carte
-Liste des infractions
-Liste par contrevenant
 
-Prénom puis nom
-Juste le secteur
-
-QR Code
-
+Priorité 1
 Liste des infractions
 - Downhill
 - Saut dangereux
@@ -20,9 +13,14 @@ Liste des infractions
 - Manoeuvre dangereuse
 
 
+Priorité 2
+QR Code
 
 
-Ouverture de piste
+
+
+Autre site...
+Ouverture de piste. Un site pour enregistrer les timestamp des avertissements
 
 
 
