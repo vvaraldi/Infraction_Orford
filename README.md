@@ -6,14 +6,7 @@ Photo de la carte
 Priorité 1
 
 In the report of this Infraction_Orford project I want to convert the type 
-Liste des infractions
-- Downhill
-- Saut dangereux
-- Ski hors piste
-- Ski piste fermée
-- Saut des chaises
-- Manoeuvre dangereuse
-- Autres (voir commentaire)
+
 
 
 Priorité 2

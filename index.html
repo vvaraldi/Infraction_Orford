@@ -52,8 +52,7 @@
       <a href="https://vvaraldi.github.io/Inspection_Rando_Orford/index.html" target="_blank" class="quick-link">
         🏔️ Accéder à Ski-Track →
       </a>
-    </div>
-	-->
+    </div>-->
     
     <div class="page-header">
       <h1 class="page-title">Rapport d'infraction</h1>
@@ -154,11 +153,11 @@
         
         <!-- Location -->
         <div class="form-section">
-          <h3 class="form-section-title">Localisation <span class="optional-label">(optionnel)</span></h3>
+          <h3 class="form-section-title">Localisation</h3>
           <div class="form-group">
-            <label class="form-label" for="sector-select">Secteur</label>
-            <select class="form-select" id="sector-select">
-              <option value="">-- Aucun secteur sélectionné --</option>
+            <label class="form-label" for="sector-select">Secteur <span class="required-star">*</span></label>
+            <select class="form-select" id="sector-select" required>
+              <option value="">-- Sélectionner un secteur --</option>
               <option value="mont-orford">Mont-Orford</option>
               <option value="giroux-nord">Mont Giroux Nord</option>
               <option value="giroux-est">Mont Giroux Est</option>
@@ -169,7 +168,7 @@
           </div>
           
           <div class="form-group">
-            <label class="form-label" for="trail-select">Piste / Sentier</label>
+            <label class="form-label" for="trail-select">Piste / Sentier <span class="optional-label">(optionnel)</span></label>
             <select class="form-select" id="trail-select" disabled>
               <option value="">-- Sélectionner d'abord un secteur --</option>
             </select>

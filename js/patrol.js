@@ -104,10 +104,10 @@ class PatrolForm {
       snapshot.forEach(doc => {
         const data = doc.data();
         const date = data.offenceTimestamp ? formatDate(data.offenceTimestamp) : 'N/A';
-        const trail = data.trail || 'N/A';
+        const sectorName = this.getSectorDisplayName(data.sector) || 'N/A';
         const option = document.createElement('option');
         option.value = doc.id;
-        option.textContent = `${date} - ${trail}`;
+        option.textContent = `${date} - ${sectorName}`;
         this.surveySelector.appendChild(option);
       });
       
@@ -115,6 +115,23 @@ class PatrolForm {
       console.error('Error loading infractions:', error);
       showMessage('Erreur lors du chargement des rapports', 'error');
     }
+  }
+  
+  /**
+   * Get display name for sector
+   * @param {string} sectorId - Sector ID
+   * @returns {string} Display name
+   */
+  getSectorDisplayName(sectorId) {
+    const sectors = {
+      'mont-orford': 'Mont-Orford',
+      'giroux-nord': 'Mont Giroux Nord',
+      'giroux-est': 'Mont Giroux Est',
+      'alfred-desrochers': 'Mont Alfred-DesRochers',
+      'remontees': 'Remontées mécaniques',
+      'randonnee-alpine': 'Randonnée alpine'
+    };
+    return sectors[sectorId] || sectorId || '';
   }
   
   async handleSurveyChange(e) {
@@ -293,7 +310,7 @@ class PatrolForm {
   }
   
   /**
-   * Validate the form - date, time, offender name, and fault are required
+   * Validate the form - date, time, offender name, fault, and sector are required
    */
   validateForm() {
     let isValid = true;
@@ -326,13 +343,22 @@ class PatrolForm {
       this.offenderName.classList.remove('is-invalid');
     }
     
-    // Check fault type (required) - NEW
+    // Check fault type (required)
     if (!this.faultSelect.value) {
       isValid = false;
       errors.push('Le type d\'infraction est requis');
       this.faultSelect.classList.add('is-invalid');
     } else {
       this.faultSelect.classList.remove('is-invalid');
+    }
+    
+    // Check sector (required)
+    if (!this.sectorSelect.value) {
+      isValid = false;
+      errors.push('Le secteur est requis');
+      this.sectorSelect.classList.add('is-invalid');
+    } else {
+      this.sectorSelect.classList.remove('is-invalid');
     }
     
     // Show errors if any
@@ -501,7 +527,8 @@ class PatrolForm {
     this.offenceDate.classList.remove('is-invalid');
     this.offenceTime.classList.remove('is-invalid');
     this.offenderName.classList.remove('is-invalid');
-    this.faultSelect.classList.remove('is-invalid'); // NEW: Remove validation class
+    this.faultSelect.classList.remove('is-invalid');
+    this.sectorSelect.classList.remove('is-invalid');
   }
 }
 
