@@ -18,10 +18,18 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Firebase services
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// Declare variables but don't initialize them yet
+let auth, db, storage;
+
+// Wait for Firebase to be fully loaded
+window.addEventListener('load', function() {
+  // NOW initialize the Firebase services
+  auth = firebase.auth();
+  db = firebase.firestore();
+  storage = firebase.storage();
+  
+  console.log('Firebase services initialized');
+});
 
 // Current user data
 let currentUser = null;
