@@ -4,6 +4,8 @@
 Photo de la carte
 
 Priorité 1
+
+In the report of this Infraction_Orford project I want to convert the type 
 Liste des infractions
 - Downhill
 - Saut dangereux
@@ -12,8 +14,6 @@ Liste des infractions
 - Saut des chaises
 - Manoeuvre dangereuse
 - Autres (voir commentaire)
-
-Nous devons ajouter un tag à nos users car une personne peut faire de l'inspection seulement ou infraction ou les deux. Pareil pour les admins !
 
 
 Priorité 2

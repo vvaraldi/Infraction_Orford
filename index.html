@@ -49,7 +49,7 @@
     
     <!-- Quick link to Ski-Track -->
     <div class="quick-link-bar">
-      <a href="https://trail-inspection.web.app" target="_blank" class="quick-link">
+      <a href="https://vvaraldi.github.io/Inspection_Rando_Orford/index.html" target="_blank" class="quick-link">
         🏔️ Accéder à Ski-Track →
       </a>
     </div>
@@ -133,6 +133,24 @@
           </div>
         </div>
         
+        <!-- Infraction type (NEW SECTION) -->
+        <div class="form-section">
+          <h3 class="form-section-title">Infraction</h3>
+          <div class="form-group">
+            <label class="form-label" for="fault-select">Type d'infraction <span class="required-star">*</span> <span class="optional-label">(merci d'ajouter un complément d'info plus bas)</span></label>
+            <select class="form-select" id="fault-select" required>
+              <option value="">-- Sélectionner le type d'infraction --</option>
+              <option value="downhill">Downhill</option>
+              <option value="saut-dangereux">Saut dangereux</option>
+              <option value="ski-hors-piste">Ski hors piste</option>
+              <option value="ski-piste-fermee">Ski piste fermée</option>
+              <option value="saut-des-chaises">Saut des chaises</option>
+              <option value="manoeuvre-dangereuse">Manoeuvre dangereuse</option>
+              <option value="autres">Autres (voir commentaire)</option>
+            </select>
+          </div>
+        </div>
+        
         <!-- Location -->
         <div class="form-section">
           <h3 class="form-section-title">Localisation <span class="optional-label">(optionnel)</span></h3>
@@ -182,10 +200,10 @@
         
         <!-- Offence details -->
         <div class="form-section">
-          <h3 class="form-section-title">Infraction <span class="optional-label">(optionnel)</span></h3>
+          <h3 class="form-section-title">Commentaires <span class="optional-label">(optionnel)</span></h3>
           <div class="form-group">
-            <label class="form-label" for="offence-type">Description de l'infraction</label>
-            <textarea class="form-textarea" id="offence-type" rows="4" placeholder="Décrivez l'infraction..."></textarea>
+            <label class="form-label" for="offence-type">Description complémentaire de l'infraction</label>
+            <textarea class="form-textarea" id="offence-type" rows="4" placeholder="Décrivez l'infraction en détail..."></textarea>
           </div>
         </div>
         

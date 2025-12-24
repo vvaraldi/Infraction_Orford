@@ -38,6 +38,7 @@ class PatrolForm {
     this.offenceDate = document.getElementById('offence-date');
     this.offenceTime = document.getElementById('offence-time');
     this.offenderName = document.getElementById('offender-name');
+    this.faultSelect = document.getElementById('fault-select'); // NEW: Fault dropdown
     this.sectorSelect = document.getElementById('sector-select');
     this.trailSelect = document.getElementById('trail-select');
     this.offPiste = document.getElementById('off-piste');
@@ -156,6 +157,11 @@ class PatrolForm {
     
     this.offenderName.value = data.offenderName || '';
     
+    // Populate fault select (NEW)
+    if (this.faultSelect) {
+      this.faultSelect.value = data.fault || '';
+    }
+    
     // Populate sector and trail
     if (data.sector) {
       this.sectorSelect.value = data.sector;
@@ -269,7 +275,25 @@ class PatrolForm {
   }
   
   /**
-   * Validate the form - only date, time, and offender name are required
+   * Get display name for fault type
+   * @param {string} faultId - Fault ID
+   * @returns {string} Display name
+   */
+  getFaultDisplayName(faultId) {
+    const faults = {
+      'downhill': 'Downhill',
+      'saut-dangereux': 'Saut dangereux',
+      'ski-hors-piste': 'Ski hors piste',
+      'ski-piste-fermee': 'Ski piste fermée',
+      'saut-des-chaises': 'Saut des chaises',
+      'manoeuvre-dangereuse': 'Manoeuvre dangereuse',
+      'autres': 'Autres (voir commentaire)'
+    };
+    return faults[faultId] || faultId;
+  }
+  
+  /**
+   * Validate the form - date, time, offender name, and fault are required
    */
   validateForm() {
     let isValid = true;
@@ -300,6 +324,15 @@ class PatrolForm {
       this.offenderName.classList.add('is-invalid');
     } else {
       this.offenderName.classList.remove('is-invalid');
+    }
+    
+    // Check fault type (required) - NEW
+    if (!this.faultSelect.value) {
+      isValid = false;
+      errors.push('Le type d\'infraction est requis');
+      this.faultSelect.classList.add('is-invalid');
+    } else {
+      this.faultSelect.classList.remove('is-invalid');
     }
     
     // Show errors if any
@@ -336,6 +369,8 @@ class PatrolForm {
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
         offenderImageUrl: photoUrl || null,
+        fault: this.faultSelect.value, // NEW: Fault field
+        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value), // NEW: Display name for easier reading
         sector: this.sectorSelect.value || null,
         trail: this.trailSelect.value || null,
         offPiste: this.offPiste.checked,
@@ -388,6 +423,8 @@ class PatrolForm {
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
         offenderImageUrl: photoUrl || this.photoUrl || null,
+        fault: this.faultSelect.value, // NEW: Fault field
+        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value), // NEW: Display name
         sector: this.sectorSelect.value || null,
         trail: this.trailSelect.value || null,
         offPiste: this.offPiste.checked,
@@ -448,6 +485,7 @@ class PatrolForm {
     // Reset fields
     this.setDefaultValues();
     this.offenderName.value = '';
+    this.faultSelect.value = ''; // NEW: Reset fault select
     this.sectorSelect.value = '';
     this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
     this.trailSelect.disabled = true;
@@ -463,6 +501,7 @@ class PatrolForm {
     this.offenceDate.classList.remove('is-invalid');
     this.offenceTime.classList.remove('is-invalid');
     this.offenderName.classList.remove('is-invalid');
+    this.faultSelect.classList.remove('is-invalid'); // NEW: Remove validation class
   }
 }
 

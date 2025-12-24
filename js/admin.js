@@ -1,7 +1,7 @@
 /**
- * admin.js
- * Admin panel functionality for managing INFRACTIONS ONLY
- * User management is handled by the Inspection (Ski-Track) project
+ * admin-infraction-only.js
+ * Admin panel functionality for managing infractions ONLY
+ * User management is handled by the Inspection project
  */
 
 class AdminManager {
@@ -65,12 +65,26 @@ class AdminManager {
     this.archiveBtn.addEventListener('click', () => this.archiveInfraction());
     this.saveSanctionBtn.addEventListener('click', () => this.saveSanction());
     
-    // Close modal when clicking outside
-    this.infractionModal.addEventListener('click', (e) => {
-      if (e.target === this.infractionModal) {
-        this.hideInfractionModal();
-      }
-    });
+    // Close modal on overlay click
+    this.infractionModal.querySelector('.modal-overlay').addEventListener('click', () => this.hideInfractionModal());
+  }
+  
+  /**
+   * Get display name for fault type
+   * @param {string} faultId - Fault ID
+   * @returns {string} Display name
+   */
+  getFaultDisplayName(faultId) {
+    const faults = {
+      'downhill': 'Downhill',
+      'saut-dangereux': 'Saut dangereux',
+      'ski-hors-piste': 'Ski hors piste',
+      'ski-piste-fermee': 'Ski piste fermée',
+      'saut-des-chaises': 'Saut des chaises',
+      'manoeuvre-dangereuse': 'Manoeuvre dangereuse',
+      'autres': 'Autres (voir commentaire)'
+    };
+    return faults[faultId] || faultId || '-';
   }
   
   // ==================== INFRACTIONS ====================
@@ -102,7 +116,7 @@ class AdminManager {
       console.error('Error loading infractions:', error);
       this.infractionsTbody.innerHTML = `
         <tr>
-          <td colspan="7" class="text-center text-danger">Erreur de chargement: ${error.message}</td>
+          <td colspan="7" class="text-center text-danger">Erreur de chargement</td>
         </tr>
       `;
     }
@@ -140,7 +154,7 @@ class AdminManager {
       });
     }
     
-    // Build HTML
+    // Build HTML - Updated to show fault instead of offenceType in the list
     let html = '';
     sortedData.forEach(data => {
       const date = formatDate(data.offenceTimestamp);
@@ -149,11 +163,14 @@ class AdminManager {
         '<span class="badge badge-secondary">Archivé</span>' : 
         '<span class="badge badge-warning">En cours</span>';
       
+      // Use faultDisplayName if available, otherwise use getFaultDisplayName
+      const faultDisplay = data.faultDisplayName || this.getFaultDisplayName(data.fault);
+      
       html += `
         <tr class="clickable-row" data-id="${data.id}">
           <td>${date}</td>
           <td>${data.offenderName || '-'}</td>
-          <td>${data.offenceType || '-'}</td>
+          <td>${faultDisplay}</td>
           <td>${location}</td>
           <td>${data.patrolName || '-'}</td>
           <td>${status}</td>
@@ -185,45 +202,50 @@ class AdminManager {
       const date = formatDate(data.offenceTimestamp);
       const location = data.trail ? `${data.trail}${data.offPiste ? ' (HP)' : ''}` : '-';
       
-      // Handle photo - check for both offenderImageUrl (single) and offenderImage (array)
-      let imagesHtml = '';
+      // Use faultDisplayName if available, otherwise use getFaultDisplayName
+      const faultDisplay = data.faultDisplayName || this.getFaultDisplayName(data.fault);
+      
+      let imageHtml = '';
       if (data.offenderImageUrl) {
-        imagesHtml = `<img src="${data.offenderImageUrl}" alt="Photo" class="infraction-photo" style="max-width: 100%; max-height: 300px; border-radius: 8px;">`;
-      } else if (data.offenderImage && data.offenderImage.length > 0) {
-        imagesHtml = data.offenderImage.map(url => 
-          `<img src="${url}" alt="Photo" class="infraction-photo" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin: 5px;">`
-        ).join('');
+        imageHtml = `<img src="${data.offenderImageUrl}" alt="Photo" class="infraction-photo">`;
       } else {
-        imagesHtml = '<p style="color: #6b7280;">Aucune photo</p>';
+        imageHtml = '<p class="text-muted">Aucune photo</p>';
       }
       
       this.infractionModalBody.innerHTML = `
-        <div class="infraction-details" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="infraction-details">
           <div class="detail-section">
-            <h4 style="font-size: 0.875rem; font-weight: 600; color: #dc2626; margin-bottom: 0.75rem;">INFORMATIONS GÉNÉRALES</h4>
+            <h4>Informations générales</h4>
             <p><strong>Date:</strong> ${date}</p>
             <p><strong>Contrevenant:</strong> ${data.offenderName || '-'}</p>
-            <p><strong>Type d'infraction:</strong> ${data.offenceType || '-'}</p>
+            <p><strong>Type d'infraction:</strong> ${faultDisplay}</p>
             <p><strong>Lieu:</strong> ${location}</p>
-            <p><strong>Pratique:</strong> ${getPracticeName(data.practice) || '-'}</p>
+            <p><strong>Pratique:</strong> ${data.practice || '-'}</p>
             <p><strong>Patrouilleur:</strong> ${data.patrolName || '-'}</p>
-            <p><strong>Créé le:</strong> ${data.createdAt ? formatDate(data.createdAt) : '-'}</p>
+            <p><strong>Créé le:</strong> ${formatDate(data.createdAt)}</p>
             ${data.modifiedAt ? `<p><strong>Modifié le:</strong> ${formatDate(data.modifiedAt)}</p>` : ''}
           </div>
           
+          ${data.offenceType ? `
           <div class="detail-section">
-            <h4 style="font-size: 0.875rem; font-weight: 600; color: #dc2626; margin-bottom: 0.75rem;">PHOTOS</h4>
+            <h4>Commentaires / Description</h4>
+            <div class="infraction-description">${data.offenceType}</div>
+          </div>
+          ` : ''}
+          
+          <div class="detail-section">
+            <h4>Photo</h4>
             <div class="photos-grid">
-              ${imagesHtml}
+              ${imageHtml}
             </div>
           </div>
           
           <div class="detail-section">
-            <h4 style="font-size: 0.875rem; font-weight: 600; color: #dc2626; margin-bottom: 0.75rem;">SANCTION ET COMMENTAIRES ADMINISTRATIFS</h4>
-            <textarea id="admin-comments" class="form-textarea" rows="4" 
-                      placeholder="Entrez les commentaires et sanctions...">${data.adminComments || data.commentsAndSanctionAdmin || ''}</textarea>
-            ${data.adminModifiedAt || data.timestampModificationAdmin ? 
-              `<p style="color: #6b7280; font-size: 0.75rem; margin-top: 0.5rem;">Dernière modification admin: ${formatDate(data.adminModifiedAt || data.timestampModificationAdmin)}</p>` : 
+            <h4>Sanction et commentaires administratifs</h4>
+            <textarea id="admin-comments" class="form-control" rows="4" 
+                      placeholder="Entrez les commentaires et sanctions...">${data.commentsAndSanctionAdmin || ''}</textarea>
+            ${data.timestampModificationAdmin ? 
+              `<p class="text-muted mt-2">Dernière modification admin: ${formatDate(data.timestampModificationAdmin)}</p>` : 
               ''}
           </div>
         </div>
@@ -244,7 +266,7 @@ class AdminManager {
       
     } catch (error) {
       console.error('Error loading infraction:', error);
-      alert('Erreur lors du chargement de l\'infraction: ' + error.message);
+      alert('Erreur lors du chargement de l\'infraction');
     }
   }
   
@@ -255,9 +277,7 @@ class AdminManager {
       const comments = document.getElementById('admin-comments').value;
       
       await db.collection('infractions').doc(this.currentInfractionId).update({
-        adminComments: comments,
-        commentsAndSanctionAdmin: comments, // Keep both for compatibility
-        adminModifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        commentsAndSanctionAdmin: comments,
         timestampModificationAdmin: firebase.firestore.FieldValue.serverTimestamp()
       });
       
@@ -266,7 +286,7 @@ class AdminManager {
       
     } catch (error) {
       console.error('Error saving sanction:', error);
-      alert('Erreur lors de l\'enregistrement: ' + error.message);
+      alert('Erreur lors de l\'enregistrement');
     }
   }
   
@@ -283,7 +303,6 @@ class AdminManager {
       };
       
       if (newStatus) {
-        updateData.archivedAt = firebase.firestore.FieldValue.serverTimestamp();
         updateData.timestampArchivedAdmin = firebase.firestore.FieldValue.serverTimestamp();
       }
       
@@ -295,17 +314,17 @@ class AdminManager {
       
     } catch (error) {
       console.error('Error archiving infraction:', error);
-      alert('Erreur lors de l\'archivage: ' + error.message);
+      alert('Erreur lors de l\'archivage');
     }
   }
   
   showInfractionModal() {
-    this.infractionModal.style.display = 'flex';
+    this.infractionModal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
   
   hideInfractionModal() {
-    this.infractionModal.style.display = 'none';
+    this.infractionModal.classList.remove('active');
     document.body.style.overflow = '';
     this.currentInfractionId = null;
   }
