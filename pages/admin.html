@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administration - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
-  <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
 </head>
 
@@ -49,52 +48,47 @@
     
     <div class="page-header">
       <h1 class="page-title">Administration - Infractions</h1>
-      <p class="page-subtitle">
+      <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">
         <strong>Note:</strong> La gestion des utilisateurs se fait via le panneau d'administration de l'Inspection (Ski-Track).
       </p>
     </div>
     
-    <!-- Single Tab - Infractions Only -->
-    <div class="content-section">
-      <!-- No tabs needed, just the infractions content -->
-      
-      <!-- Infractions Management -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📋 Gestion des infractions</h2>
-          <div class="card-actions">
-            <label class="checkbox-label" style="margin-right: 1rem;">
-              <input type="checkbox" id="show-archived">
-              <span>Afficher les archives</span>
-            </label>
-            <select id="sort-by" class="form-select" style="width: auto;">
-              <option value="date">Trier par date</option>
-              <option value="offender">Trier par contrevenant</option>
-            </select>
-          </div>
+    <!-- Infractions Management (No tabs needed) -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">📋 Gestion des infractions</h2>
+        <div class="card-actions">
+          <label class="checkbox-label" style="margin-right: 1rem;">
+            <input type="checkbox" id="show-archived">
+            <span>Afficher les archives</span>
+          </label>
+          <select id="sort-by" class="form-select" style="width: auto;">
+            <option value="date">Trier par date</option>
+            <option value="offender">Trier par contrevenant</option>
+          </select>
         </div>
-        
-        <div class="card-body">
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Contrevenant</th>
-                  <th>Infraction</th>
-                  <th>Lieu</th>
-                  <th>Patrouilleur</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="infractions-tbody">
-                <tr>
-                  <td colspan="7" class="text-center">Chargement des infractions...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Contrevenant</th>
+                <th>Infraction</th>
+                <th>Lieu</th>
+                <th>Patrouilleur</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="infractions-tbody">
+              <tr>
+                <td colspan="7" class="text-center">Chargement des infractions...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -102,8 +96,7 @@
   
   <!-- Infraction Detail Modal -->
   <div id="infraction-modal" class="modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content modal-lg">
+    <div class="modal-content modal-large">
       <div class="modal-header">
         <h3 class="modal-title">Détails de l'infraction</h3>
         <button class="modal-close" id="close-infraction-modal">×</button>
@@ -121,16 +114,15 @@
     </div>
   </div>
   
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
   
-  <!-- Scripts -->
-  <script src="../js/config.js"></script>
+  <!-- Application Scripts - USING EXISTING FILES -->
+  <script src="../js/common.js"></script>
   <script src="../js/auth.js"></script>
-  <script src="../js/utils.js"></script>
-  <script src="../js/admin-infraction-only.js"></script>
+  <script src="../js/admin.js"></script>
 </body>
 </html>
