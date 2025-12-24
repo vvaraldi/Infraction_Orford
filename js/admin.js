@@ -49,24 +49,51 @@ class AdminManager {
   
   bindEvents() {
     // Infraction controls
-    this.showArchivedCheckbox.addEventListener('change', () => {
-      this.showArchived = this.showArchivedCheckbox.checked;
-      this.loadInfractions();
-    });
+    if (this.showArchivedCheckbox) {
+      this.showArchivedCheckbox.addEventListener('change', () => {
+        this.showArchived = this.showArchivedCheckbox.checked;
+        this.loadInfractions();
+      });
+    }
     
-    this.sortBySelect.addEventListener('change', () => {
-      this.sortBy = this.sortBySelect.value;
-      this.renderInfractions();
-    });
+    if (this.sortBySelect) {
+      this.sortBySelect.addEventListener('change', () => {
+        this.sortBy = this.sortBySelect.value;
+        this.renderInfractions();
+      });
+    }
     
     // Modal controls
-    this.closeInfractionModal.addEventListener('click', () => this.hideInfractionModal());
-    this.closeInfractionBtn.addEventListener('click', () => this.hideInfractionModal());
-    this.archiveBtn.addEventListener('click', () => this.archiveInfraction());
-    this.saveSanctionBtn.addEventListener('click', () => this.saveSanction());
+    if (this.closeInfractionModal) {
+      this.closeInfractionModal.addEventListener('click', () => this.hideInfractionModal());
+    }
+    
+    if (this.closeInfractionBtn) {
+      this.closeInfractionBtn.addEventListener('click', () => this.hideInfractionModal());
+    }
+    
+    if (this.archiveBtn) {
+      this.archiveBtn.addEventListener('click', () => this.archiveInfraction());
+    }
+    
+    if (this.saveSanctionBtn) {
+      this.saveSanctionBtn.addEventListener('click', () => this.saveSanction());
+    }
     
     // Close modal on overlay click
-    this.infractionModal.querySelector('.modal-overlay').addEventListener('click', () => this.hideInfractionModal());
+    if (this.infractionModal) {
+      const overlay = this.infractionModal.querySelector('.modal-overlay');
+      if (overlay) {
+        overlay.addEventListener('click', () => this.hideInfractionModal());
+      }
+      
+      // Also close when clicking on the modal background (fallback)
+      this.infractionModal.addEventListener('click', (e) => {
+        if (e.target === this.infractionModal) {
+          this.hideInfractionModal();
+        }
+      });
+    }
   }
   
   /**
@@ -114,11 +141,13 @@ class AdminManager {
       
     } catch (error) {
       console.error('Error loading infractions:', error);
-      this.infractionsTbody.innerHTML = `
-        <tr>
-          <td colspan="7" class="text-center text-danger">Erreur de chargement</td>
-        </tr>
-      `;
+      if (this.infractionsTbody) {
+        this.infractionsTbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center text-danger">Erreur de chargement: ${error.message}</td>
+          </tr>
+        `;
+      }
     }
   }
   
@@ -126,6 +155,8 @@ class AdminManager {
    * Sort and render infractions based on current sort selection
    */
   renderInfractions() {
+    if (!this.infractionsTbody) return;
+    
     if (this.infractionsData.length === 0) {
       this.infractionsTbody.innerHTML = `
         <tr>
@@ -169,10 +200,10 @@ class AdminManager {
       html += `
         <tr class="clickable-row" data-id="${data.id}">
           <td>${date}</td>
-          <td>${data.offenderName || '-'}</td>
-          <td>${faultDisplay}</td>
-          <td>${location}</td>
-          <td>${data.patrolName || '-'}</td>
+          <td>${escapeHtml(data.offenderName) || '-'}</td>
+          <td>${escapeHtml(faultDisplay)}</td>
+          <td>${escapeHtml(location)}</td>
+          <td>${escapeHtml(data.patrolName) || '-'}</td>
           <td>${status}</td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="adminManager.viewInfraction('${data.id}')">
@@ -212,54 +243,58 @@ class AdminManager {
         imageHtml = '<p class="text-muted">Aucune photo</p>';
       }
       
-      this.infractionModalBody.innerHTML = `
-        <div class="infraction-details">
-          <div class="detail-section">
-            <h4>Informations générales</h4>
-            <p><strong>Date:</strong> ${date}</p>
-            <p><strong>Contrevenant:</strong> ${data.offenderName || '-'}</p>
-            <p><strong>Type d'infraction:</strong> ${faultDisplay}</p>
-            <p><strong>Lieu:</strong> ${location}</p>
-            <p><strong>Pratique:</strong> ${data.practice || '-'}</p>
-            <p><strong>Patrouilleur:</strong> ${data.patrolName || '-'}</p>
-            <p><strong>Créé le:</strong> ${formatDate(data.createdAt)}</p>
-            ${data.modifiedAt ? `<p><strong>Modifié le:</strong> ${formatDate(data.modifiedAt)}</p>` : ''}
-          </div>
-          
-          ${data.offenceType ? `
-          <div class="detail-section">
-            <h4>Commentaires / Description</h4>
-            <div class="infraction-description">${data.offenceType}</div>
-          </div>
-          ` : ''}
-          
-          <div class="detail-section">
-            <h4>Photo</h4>
-            <div class="photos-grid">
-              ${imageHtml}
+      if (this.infractionModalBody) {
+        this.infractionModalBody.innerHTML = `
+          <div class="infraction-details">
+            <div class="detail-section">
+              <h4>Informations générales</h4>
+              <p><strong>Date:</strong> ${date}</p>
+              <p><strong>Contrevenant:</strong> ${escapeHtml(data.offenderName) || '-'}</p>
+              <p><strong>Type d'infraction:</strong> ${escapeHtml(faultDisplay)}</p>
+              <p><strong>Lieu:</strong> ${escapeHtml(location)}</p>
+              <p><strong>Pratique:</strong> ${escapeHtml(data.practice) || '-'}</p>
+              <p><strong>Patrouilleur:</strong> ${escapeHtml(data.patrolName) || '-'}</p>
+              <p><strong>Créé le:</strong> ${formatDate(data.createdAt)}</p>
+              ${data.modifiedAt ? `<p><strong>Modifié le:</strong> ${formatDate(data.modifiedAt)}</p>` : ''}
+            </div>
+            
+            ${data.offenceType ? `
+            <div class="detail-section">
+              <h4>Commentaires / Description</h4>
+              <div class="infraction-description">${escapeHtml(data.offenceType)}</div>
+            </div>
+            ` : ''}
+            
+            <div class="detail-section">
+              <h4>Photo</h4>
+              <div class="photos-grid">
+                ${imageHtml}
+              </div>
+            </div>
+            
+            <div class="detail-section">
+              <h4>Sanction et commentaires administratifs</h4>
+              <textarea id="admin-comments" class="form-control form-textarea" rows="4" 
+                        placeholder="Entrez les commentaires et sanctions...">${escapeHtml(data.commentsAndSanctionAdmin) || ''}</textarea>
+              ${data.timestampModificationAdmin ? 
+                `<p class="text-muted mt-2">Dernière modification admin: ${formatDate(data.timestampModificationAdmin)}</p>` : 
+                ''}
             </div>
           </div>
-          
-          <div class="detail-section">
-            <h4>Sanction et commentaires administratifs</h4>
-            <textarea id="admin-comments" class="form-control" rows="4" 
-                      placeholder="Entrez les commentaires et sanctions...">${data.commentsAndSanctionAdmin || ''}</textarea>
-            ${data.timestampModificationAdmin ? 
-              `<p class="text-muted mt-2">Dernière modification admin: ${formatDate(data.timestampModificationAdmin)}</p>` : 
-              ''}
-          </div>
-        </div>
-      `;
+        `;
+      }
       
       // Update archive button
-      if (data.archived) {
-        this.archiveBtn.textContent = 'Désarchiver';
-        this.archiveBtn.classList.remove('btn-warning');
-        this.archiveBtn.classList.add('btn-secondary');
-      } else {
-        this.archiveBtn.textContent = 'Archiver';
-        this.archiveBtn.classList.remove('btn-secondary');
-        this.archiveBtn.classList.add('btn-warning');
+      if (this.archiveBtn) {
+        if (data.archived) {
+          this.archiveBtn.textContent = 'Désarchiver';
+          this.archiveBtn.classList.remove('btn-warning');
+          this.archiveBtn.classList.add('btn-secondary');
+        } else {
+          this.archiveBtn.textContent = 'Archiver';
+          this.archiveBtn.classList.remove('btn-secondary');
+          this.archiveBtn.classList.add('btn-warning');
+        }
       }
       
       this.showInfractionModal();
@@ -274,7 +309,8 @@ class AdminManager {
     if (!this.currentInfractionId) return;
     
     try {
-      const comments = document.getElementById('admin-comments').value;
+      const commentsEl = document.getElementById('admin-comments');
+      const comments = commentsEl ? commentsEl.value : '';
       
       await db.collection('infractions').doc(this.currentInfractionId).update({
         commentsAndSanctionAdmin: comments,
@@ -319,14 +355,30 @@ class AdminManager {
   }
   
   showInfractionModal() {
-    this.infractionModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    if (this.infractionModal) {
+      this.infractionModal.style.display = 'flex';
+      this.infractionModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
   }
   
   hideInfractionModal() {
-    this.infractionModal.classList.remove('active');
-    document.body.style.overflow = '';
+    if (this.infractionModal) {
+      this.infractionModal.style.display = 'none';
+      this.infractionModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
     this.currentInfractionId = null;
+  }
+}
+
+// Helper function if not defined in common.js
+if (typeof escapeHtml === 'undefined') {
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 }
 
