@@ -5,41 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administration - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
-  <style>
-    /* Sort controls styling */
-    .sort-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-      padding: 0.5rem 0;
-    }
-    
-    .sort-controls .form-label {
-      margin-bottom: 0;
-      white-space: nowrap;
-      font-weight: 500;
-    }
-    
-    .sort-controls .form-select {
-      max-width: 280px;
-    }
-    
-    /* Responsive sort controls */
-    @media (max-width: 576px) {
-      .sort-controls {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      
-      .sort-controls .form-select {
-        max-width: 100%;
-        width: 100%;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -78,7 +45,7 @@
   </div>
   
   <!-- Main content -->
-  <div id="main-content" class="main" style="display: none;">
+  <div id="main-content" class="main admin-main" style="display: none;">
     
     <div class="page-header">
       <h1 class="page-title">Administration</h1>

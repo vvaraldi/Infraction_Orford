@@ -56,6 +56,7 @@
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
+  background: var(--theme-bg, #f9fafb);
 }
 
 .infraction-main,
@@ -212,6 +213,28 @@
   min-height: 100px;
 }
 
+/* Required and optional indicators */
+.required-star {
+  color: var(--color-danger, #dc2626);
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.optional-label {
+  color: var(--theme-text-light, #6b7280);
+  font-size: 0.85em;
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
+/* Invalid field styling */
+.form-input.is-invalid,
+.form-select.is-invalid,
+.form-textarea.is-invalid {
+  border-color: var(--color-danger, #dc2626) !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
+}
+
 /* ========================================
    FIX 5: Buttons with better styling
    ======================================== */
@@ -304,6 +327,7 @@
   padding: 0.25rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
+  margin-bottom: 1.5rem;
 }
 
 .tab-btn {
@@ -343,7 +367,7 @@
 /* ========================================
    FIX 7: Tables for admin
    ======================================== */
-.table-responsive {
+.table-container {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -368,57 +392,53 @@
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--theme-border, #e5e7eb);
   color: var(--theme-text, #1f2937);
-  vertical-align: middle;
 }
 
-.data-table tbody tr:hover {
+.data-table tr:hover {
   background: var(--color-gray-50, #f9fafb);
-}
-
-.data-table .text-center {
-  text-align: center;
-}
-
-.data-table .text-danger {
-  color: #dc2626;
 }
 
 /* ========================================
    FIX 8: Badges
    ======================================== */
 .badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 500;
   border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
+  white-space: nowrap;
 }
 
 .badge-primary {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: #1e40af;
 }
 
 .badge-secondary {
-  background: var(--color-gray-100, #f3f4f6);
-  color: var(--theme-text-light, #6b7280);
+  background: var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-700, #374151);
 }
 
 .badge-success {
   background: #d1fae5;
-  color: #059669;
-}
-
-.badge-danger {
-  background: #fee2e2;
-  color: #dc2626;
+  color: #065f46;
 }
 
 .badge-warning {
   background: #fef3c7;
-  color: #d97706;
+  color: #92400e;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-info {
+  background: #e0e7ff;
+  color: #3730a3;
 }
 
 /* ========================================
@@ -438,13 +458,11 @@
 .modal-content {
   background: var(--theme-surface, #ffffff);
   border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-large {
@@ -473,8 +491,8 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--theme-text-light, #6b7280);
   cursor: pointer;
+  color: var(--theme-text-light, #6b7280);
   padding: 0.25rem;
   line-height: 1;
 }
@@ -485,8 +503,6 @@
 
 .modal-body {
   padding: 1.5rem;
-  overflow-y: auto;
-  flex: 1;
 }
 
 .modal-footer {
@@ -495,11 +511,62 @@
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--theme-border, #e5e7eb);
-  flex-wrap: wrap;
+  background: var(--color-gray-50, #f9fafb);
 }
 
 /* ========================================
-   FIX 10: Infraction details in modal
+   FIX 10: Checkbox styling
+   ======================================== */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--theme-text, #1f2937);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-text {
+  user-select: none;
+}
+
+/* ========================================
+   FIX 11: Photo preview
+   ======================================== */
+.photo-capture-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.photo-preview {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--theme-border, #e5e7eb);
+}
+
+#photo-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+/* ========================================
+   FIX 12: Infraction details in modal
    ======================================== */
 .infraction-details {
   display: flex;
@@ -508,12 +575,12 @@
 }
 
 .detail-section h3 {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--theme-text-light, #6b7280);
+  color: var(--theme-primary, #2563eb);
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
 }
 
 .detail-list {
@@ -523,13 +590,12 @@
 }
 
 .detail-list li {
-  padding: 0.375rem 0;
-  font-size: 0.875rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
 }
 
-.detail-list li strong {
-  color: var(--theme-text-light, #6b7280);
-  font-weight: 500;
+.detail-list li:last-child {
+  border-bottom: none;
 }
 
 .detail-list-small {
@@ -541,53 +607,17 @@
   background: var(--color-gray-50, #f9fafb);
   padding: 1rem;
   border-radius: 8px;
-  white-space: pre-wrap;
   font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 .infraction-photo {
   max-width: 100%;
   max-height: 300px;
+  object-fit: contain;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.infraction-photo:hover {
-  transform: scale(1.02);
-}
-
-/* ========================================
-   FIX 11: Photo preview
-   ======================================== */
-.photo-preview {
-  max-width: 200px;
-  max-height: 200px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.photo-capture-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* ========================================
-   FIX 12: Checkbox styling
-   ======================================== */
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  cursor: pointer;
+  border: 1px solid var(--theme-border, #e5e7eb);
 }
 
 /* ========================================
@@ -662,7 +692,8 @@
   border-left: 4px solid #059669;
 }
 
-.alert-danger {
+.alert-danger,
+.alert-error {
   background: #fee2e2;
   color: #991b1b;
   border-left: 4px solid #dc2626;
@@ -798,6 +829,51 @@
 }
 
 /* ========================================
+   FIX 18: Sort controls
+   ======================================== */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.sort-controls .form-label {
+  margin-bottom: 0;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.sort-controls .form-select {
+  max-width: 280px;
+}
+
+/* ========================================
+   FIX 19: Quick link bar
+   ======================================== */
+.quick-link-bar {
+  margin-bottom: 1rem;
+}
+
+.quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--theme-text, #1f2937);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.quick-link:hover {
+  background: var(--color-gray-200, #e5e7eb);
+}
+
+/* ========================================
    Responsive adjustments
    ======================================== */
 @media (max-width: 768px) {
@@ -822,6 +898,10 @@
   .form-row.two-cols > .form-group {
     flex: 1 1 100%;
     min-width: 100%;
+  }
+  
+  .form-row {
+    flex-direction: column;
   }
   
   .form-actions {
@@ -853,4 +933,43 @@
     right: 1rem;
     max-width: none;
   }
+  
+  .sort-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .sort-controls .form-select {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .data-table {
+    font-size: 0.75rem;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* ========================================
+   FIX 20: Text utilities
+   ======================================== */
+.text-center {
+  text-align: center;
+}
+
+.text-danger {
+  color: var(--color-danger, #dc2626);
+}
+
+.text-success {
+  color: var(--color-success, #10b981);
+}
+
+.text-muted {
+  color: var(--theme-text-light, #6b7280);
 }
