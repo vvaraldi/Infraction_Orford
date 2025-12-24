@@ -18,18 +18,10 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Declare variables but don't initialize them yet
-let auth, db, storage;
-
-// Wait for Firebase to be fully loaded
-window.addEventListener('load', function() {
-  // NOW initialize the Firebase services
-  auth = firebase.auth();
-  db = firebase.firestore();
-  storage = firebase.storage();
-  
-  console.log('Firebase services initialized');
-});
+// Firebase services - initialize immediately (scripts are loaded in order)
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
 // Current user data
 let currentUser = null;
@@ -110,99 +102,51 @@ function checkAuthStatus() {
   });
 }
 
-
 /**
- * Complete updated function - copy this to replace your existing checkAuthStatus
+ * Update UI elements based on user role
  */
-function checkAuthStatusComplete() {
-  const loading = document.getElementById('loading');
-  const mainContent = document.getElementById('main-content');
-  const loginLink = document.getElementById('login-link');
-  const mobileLoginLink = document.getElementById('mobile-login-link');
+function updateUIForRole(role) {
   const adminLink = document.getElementById('admin-link');
   const mobileAdminLink = document.getElementById('mobile-admin-link');
+  const loginLink = document.getElementById('login-link');
+  const mobileLoginLink = document.getElementById('mobile-login-link');
   
-  auth.onAuthStateChanged(async function(user) {
-    if (user) {
-      currentUser = user;
-      
-      try {
-        // Get user data from inspectors collection
-        const inspectorDoc = await db.collection('inspectors').doc(user.uid).get();
-        
-        if (inspectorDoc.exists) {
-          currentUserData = inspectorDoc.data();
-          currentUserData.uid = user.uid;
-          
-          // Check 1: Is user active?
-          if (currentUserData.status !== 'active') {
-            alert('Votre compte a été désactivé. Contactez l\'administrateur.');
-            await auth.signOut();
-            redirectToLogin();
-            return;
-          }
-          
-          // Check 2: Does user have infraction access?
-          if (currentUserData.allowInfraction !== true) {
-            alert('Vous n\'avez pas accès au système d\'infractions.\nContactez l\'administrateur pour obtenir les accès.');
-            await auth.signOut();
-            redirectToLogin();
-            return;
-          }
-          
-          // ✓ All checks passed - user is authorized
-          
-          // Hide loading, show content
-          if (loading) loading.style.display = 'none';
-          if (mainContent) mainContent.style.display = 'block';
-          
-          // Update login/logout links
-          if (loginLink) {
-            loginLink.textContent = 'Déconnexion';
-            loginLink.href = '#';
-            loginLink.onclick = logout;
-          }
-          if (mobileLoginLink) {
-            mobileLoginLink.textContent = 'Déconnexion';
-            mobileLoginLink.href = '#';
-            mobileLoginLink.onclick = logout;
-          }
-          
-          // Show admin link if user is admin
-          if (currentUserData.role === 'admin') {
-            if (adminLink) adminLink.style.display = 'block';
-            if (mobileAdminLink) mobileAdminLink.style.display = 'block';
-          }
-          
-          // Dispatch event for other modules
-          document.dispatchEvent(new CustomEvent('userAuthenticated', {
-            detail: currentUserData
-          }));
-          
-        } else {
-          // User document not found
-          alert('Utilisateur non trouvé dans la base de données.');
-          await auth.signOut();
-          redirectToLogin();
-        }
-        
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        alert('Erreur lors de la vérification des accès.');
-        await auth.signOut();
-        redirectToLogin();
-      }
-      
-    } else {
-      // Not logged in
-      currentUser = null;
-      currentUserData = null;
-      
-      if (!window.location.pathname.includes('login.html')) {
-        redirectToLogin();
-      }
-    }
-  });
+  // Show admin link for admins
+  if (role === 'admin') {
+    if (adminLink) adminLink.style.display = 'block';
+    if (mobileAdminLink) mobileAdminLink.style.display = 'block';
+  }
+  
+  // Update login links to logout
+  if (loginLink) {
+    loginLink.textContent = 'Déconnexion';
+    loginLink.href = '#';
+    loginLink.onclick = handleLogout;
+  }
+  
+  if (mobileLoginLink) {
+    mobileLoginLink.textContent = 'Déconnexion';
+    mobileLoginLink.href = '#';
+    mobileLoginLink.onclick = handleLogout;
+  }
+}
+
+/**
+ * Display access denied message and redirect
+ */
+function showAccessDenied(message) {
+  const loading = document.getElementById('loading');
+  const mainContent = document.getElementById('main-content');
+  
+  // Hide loading and main content
+  if (loading) loading.style.display = 'none';
+  if (mainContent) mainContent.style.display = 'none';
+  
+  // Show alert
+  alert(message);
+  
+  // Redirect to login
+  redirectToLogin();
 }
 
 /**
@@ -247,6 +191,12 @@ async function loginUser(email, password) {
     if (userData.status !== 'active') {
       await auth.signOut();
       throw new Error('account-disabled');
+    }
+    
+    // Check if user has infraction access
+    if (userData.allowInfraction !== true) {
+      await auth.signOut();
+      throw new Error('no-infraction-access');
     }
     
     return userCredential.user;
@@ -303,69 +253,8 @@ function getFirebaseConfig() {
   return firebaseConfig;
 }
 
-/**
- * Display access denied message and redirect
- * @param {string} message - The message to display
- */
-function showAccessDenied(message) {
-  const loading = document.getElementById('loading');
-  const mainContent = document.getElementById('main-content');
-  
-  // Hide loading and main content
-  if (loading) loading.style.display = 'none';
-  if (mainContent) mainContent.style.display = 'none';
-  
-  // Create and show access denied overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'access-denied-overlay';
-  overlay.innerHTML = `
-    <div class="access-denied-container">
-      <div class="access-denied-icon">🚫</div>
-      <h2>Accès Refusé</h2>
-      <p>${message}</p>
-      <div class="access-denied-actions">
-        <a href="login.html" class="btn btn-primary">Retour à la connexion</a>
-      </div>
-    </div>
-  `;
-  
-  // Add styles
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  `;
-  
-  const container = overlay.querySelector('.access-denied-container');
-  container.style.cssText = `
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-    max-width: 400px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  `;
-  
-  const icon = overlay.querySelector('.access-denied-icon');
-  icon.style.cssText = `
-    font-size: 64px;
-    margin-bottom: 20px;
-  `;
-  
-  document.body.appendChild(overlay);
-  
-  // Auto redirect after 5 seconds
-  setTimeout(() => {
-    window.location.href = 'login.html';
-  }, 5000);
-}
-
 // Initialize auth check on page load
-document.addEventListener('DOMContentLoaded', checkAuthStatus);
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, checking auth status...');
+  checkAuthStatus();
+});
