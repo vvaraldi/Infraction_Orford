@@ -1,8 +1,33 @@
 # Infractions_Orford
 
-Initial description of the request:
 
 
+Photo de la carte
+Liste des infractions
+Liste par contrevenant
+
+Prénom puis nom
+Juste le secteur
+
+QR Code
+
+Liste des infractions
+- Downhill
+- Saut dangereux
+- Ski hors piste
+- Ski piste fermée
+- Saut des chaises
+- Manoeuvre dangereuse
+
+
+
+
+Ouverture de piste
+
+
+
+
+Preliminary mandate :
 Create a database of infractions, with two type of access :
 1 - an easy HTML page to file in an infraction accessed by login. Could stay logged in for ever. Should be very easily accessible on cellphone. Should have a menu with :
 	- login if not logged in other wise logout

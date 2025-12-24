@@ -1,6 +1,6 @@
 /**
  * patrol.js
- * Patrol survey form functionality - DEBUG VERSION
+ * Patrol survey form functionality
  */
 
 class PatrolForm {
@@ -10,18 +10,14 @@ class PatrolForm {
     this.photoFile = null;
     this.photoUrl = null;
     
-    console.log('PatrolForm: Constructor called');
-    
     // Wait for authentication
     document.addEventListener('userAuthenticated', (e) => {
-      console.log('PatrolForm: userAuthenticated event received', e.detail);
       this.userData = e.detail;
       this.init();
     });
   }
   
   init() {
-    console.log('PatrolForm: Initializing...');
     this.bindElements();
     this.bindEvents();
     this.setDefaultValues();
@@ -29,12 +25,15 @@ class PatrolForm {
   }
   
   bindElements() {
+    // Form elements
     this.form = document.getElementById('infraction-form');
     this.surveySelector = document.getElementById('survey-selector');
     this.duplicateBtn = document.getElementById('duplicate-btn');
     this.duplicateBtnContainer = document.getElementById('duplicate-btn-container');
     this.saveBtn = document.getElementById('save-btn');
     this.modifyBtn = document.getElementById('modify-btn');
+    
+    // Form fields
     this.patrolName = document.getElementById('patrol-name');
     this.offenceDate = document.getElementById('offence-date');
     this.offenceTime = document.getElementById('offence-time');
@@ -44,129 +43,76 @@ class PatrolForm {
     this.offPiste = document.getElementById('off-piste');
     this.practiceSelect = document.getElementById('practice-select');
     this.offenceType = document.getElementById('offence-type');
+    
+    // Photo elements
     this.photoInput = document.getElementById('offender-photo');
     this.capturePhotoBtn = document.getElementById('capture-photo-btn');
     this.photoPreviewContainer = document.getElementById('photo-preview-container');
     this.photoPreview = document.getElementById('photo-preview');
     this.removePhotoBtn = document.getElementById('remove-photo-btn');
-    
-    console.log('PatrolForm: Elements bound');
   }
   
   bindEvents() {
-    if (this.surveySelector) {
-      this.surveySelector.addEventListener('change', (e) => this.handleSurveyChange(e));
-    }
-    if (this.duplicateBtn) {
-      this.duplicateBtn.addEventListener('click', () => this.duplicateReport());
-    }
-    if (this.sectorSelect) {
-      this.sectorSelect.addEventListener('change', (e) => this.handleSectorChange(e));
-    }
-    if (this.trailSelect) {
-      this.trailSelect.addEventListener('change', (e) => this.handleTrailChange(e));
-    }
-    if (this.capturePhotoBtn && this.photoInput) {
-      this.capturePhotoBtn.addEventListener('click', () => this.photoInput.click());
-      this.photoInput.addEventListener('change', (e) => this.handlePhotoSelect(e));
-    }
-    if (this.removePhotoBtn) {
-      this.removePhotoBtn.addEventListener('click', () => this.removePhoto());
-    }
-    if (this.form) {
-      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-    }
-    if (this.modifyBtn) {
-      this.modifyBtn.addEventListener('click', () => this.handleModify());
-    }
+    // Survey selector change
+    this.surveySelector.addEventListener('change', (e) => this.handleSurveyChange(e));
     
-    console.log('PatrolForm: Events bound');
+    // Duplicate button
+    this.duplicateBtn.addEventListener('click', () => this.duplicateReport());
+    
+    // Sector change - populate trails
+    this.sectorSelect.addEventListener('change', (e) => this.handleSectorChange(e));
+    
+    // Trail change - enable off-piste checkbox
+    this.trailSelect.addEventListener('change', (e) => this.handleTrailChange(e));
+    
+    // Photo capture
+    this.capturePhotoBtn.addEventListener('click', () => this.photoInput.click());
+    this.photoInput.addEventListener('change', (e) => this.handlePhotoSelect(e));
+    this.removePhotoBtn.addEventListener('click', () => this.removePhoto());
+    
+    // Form submission
+    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    this.modifyBtn.addEventListener('click', () => this.handleModify());
   }
   
   setDefaultValues() {
-    if (this.patrolName && this.userData) {
-      this.patrolName.value = this.userData.name || '';
-    }
+    // Set patrol name
+    this.patrolName.value = this.userData.name || '';
+    
+    // Set current date and time
     const now = new Date();
-    if (this.offenceDate) {
-      this.offenceDate.value = now.toISOString().split('T')[0];
-    }
-    if (this.offenceTime) {
-      this.offenceTime.value = now.toTimeString().slice(0, 5);
-    }
-    console.log('PatrolForm: Default values set');
+    this.offenceDate.value = now.toISOString().split('T')[0];
+    this.offenceTime.value = now.toTimeString().slice(0, 5);
   }
   
   async loadUserInfractions() {
-    console.log('PatrolForm: loadUserInfractions called');
-    
     try {
-      // Check if db is available
-      if (typeof db === 'undefined') {
-        console.error('PatrolForm: db is not defined!');
-        showMessage('Erreur: Base de données non disponible', 'error');
-        return;
-      }
-      
-      // Check if getCurrentUserId function exists
-      if (typeof getCurrentUserId !== 'function') {
-        console.error('PatrolForm: getCurrentUserId function not found!');
-        showMessage('Erreur: Fonction utilisateur non disponible', 'error');
-        return;
-      }
-      
       const userId = getCurrentUserId();
-      console.log('PatrolForm: User ID:', userId);
-      
-      if (!userId) {
-        console.warn('PatrolForm: No user ID available');
-        // Don't show error - user might not be logged in yet
-        return;
-      }
-      
-      console.log('PatrolForm: Querying infractions for user', userId);
-      
-      // Try the query
       const snapshot = await db.collection('infractions')
         .where('patrolId', '==', userId)
         .orderBy('createdAt', 'desc')
         .limit(50)
         .get();
       
-      console.log('PatrolForm: Query successful, found', snapshot.size, 'documents');
-      
       // Clear existing options except "new"
-      if (this.surveySelector) {
-        while (this.surveySelector.options.length > 1) {
-          this.surveySelector.remove(1);
-        }
-        
-        // Add infractions to selector
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          console.log('PatrolForm: Processing doc', doc.id, data);
-          const date = data.offenceTimestamp ? formatDate(data.offenceTimestamp) : 'N/A';
-          const trail = data.trail || 'N/A';
-          const option = document.createElement('option');
-          option.value = doc.id;
-          option.textContent = `${date} - ${trail}`;
-          this.surveySelector.appendChild(option);
-        });
-        
-        console.log('PatrolForm: Loaded', snapshot.size, 'infractions into selector');
+      while (this.surveySelector.options.length > 1) {
+        this.surveySelector.remove(1);
       }
+      
+      // Add infractions to selector
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const date = data.offenceTimestamp ? formatDate(data.offenceTimestamp) : 'N/A';
+        const trail = data.trail || 'N/A';
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = `${date} - ${trail}`;
+        this.surveySelector.appendChild(option);
+      });
       
     } catch (error) {
-      console.error('PatrolForm: Error loading infractions:', error);
-      console.error('PatrolForm: Error code:', error.code);
-      console.error('PatrolForm: Error message:', error.message);
-      
-      // Show more detailed error
-      if (error.message && error.message.includes('index')) {
-        showMessage('Erreur: Index Firebase requis. Vérifiez la console.', 'error');
-      } else {
-        showMessage('Erreur lors du chargement des rapports: ' + error.message, 'error');
-      }
+      console.error('Error loading infractions:', error);
+      showMessage('Erreur lors du chargement des rapports', 'error');
     }
   }
   
@@ -178,13 +124,16 @@ class PatrolForm {
       return;
     }
     
+    // Load selected infraction
     try {
       const doc = await db.collection('infractions').doc(selectedId).get();
+      
       if (doc.exists) {
         this.populateForm(doc.id, doc.data());
       }
+      
     } catch (error) {
-      console.error('PatrolForm: Error loading infraction:', error);
+      console.error('Error loading infraction:', error);
       showMessage('Erreur lors du chargement du rapport', 'error');
     }
   }
@@ -193,123 +142,86 @@ class PatrolForm {
     this.currentInfractionId = id;
     this.isNewReport = false;
     
-    if (this.saveBtn) this.saveBtn.style.display = 'none';
-    if (this.modifyBtn) this.modifyBtn.style.display = '';
-    if (this.duplicateBtnContainer) this.duplicateBtnContainer.style.display = '';
+    // Show/hide buttons
+    this.saveBtn.style.display = 'none';
+    this.modifyBtn.style.display = '';
+    this.duplicateBtnContainer.style.display = '';
     
+    // Populate fields
     if (data.offenceTimestamp) {
       const date = data.offenceTimestamp.toDate ? data.offenceTimestamp.toDate() : new Date(data.offenceTimestamp);
-      if (this.offenceDate) this.offenceDate.value = date.toISOString().split('T')[0];
-      if (this.offenceTime) this.offenceTime.value = date.toTimeString().slice(0, 5);
+      this.offenceDate.value = date.toISOString().split('T')[0];
+      this.offenceTime.value = date.toTimeString().slice(0, 5);
     }
     
-    if (this.offenderName) this.offenderName.value = data.offenderName || '';
+    this.offenderName.value = data.offenderName || '';
     
-    if (this.sectorSelect && data.sector) {
+    // Populate sector and trail
+    if (data.sector) {
       this.sectorSelect.value = data.sector;
       this.handleSectorChange({ target: this.sectorSelect });
       
+      // Wait a tick for trails to load, then set trail
       setTimeout(() => {
-        if (this.trailSelect) {
-          this.trailSelect.value = data.trail || '';
+        if (data.trail) {
+          this.trailSelect.value = data.trail;
           this.handleTrailChange({ target: this.trailSelect });
         }
-        if (this.offPiste) this.offPiste.checked = data.offPiste || false;
+        if (data.offPiste) {
+          this.offPiste.checked = true;
+        }
       }, 100);
     }
     
-    if (this.practiceSelect) this.practiceSelect.value = data.practice || '';
-    if (this.offenceType) this.offenceType.value = data.offenceType || '';
+    this.practiceSelect.value = data.practice || '';
+    this.offenceType.value = data.offenceType || '';
     
+    // Handle photo
     if (data.offenderImageUrl) {
       this.photoUrl = data.offenderImageUrl;
-      if (this.photoPreview) this.photoPreview.src = data.offenderImageUrl;
-      if (this.photoPreviewContainer) this.photoPreviewContainer.style.display = '';
-      if (this.capturePhotoBtn) this.capturePhotoBtn.textContent = '📷 Changer la photo';
+      this.photoPreview.src = data.offenderImageUrl;
+      this.photoPreviewContainer.style.display = '';
+      this.capturePhotoBtn.textContent = '📷 Changer la photo';
+    } else {
+      this.removePhoto();
     }
     
     showMessage('Rapport chargé. Modifiez les champs nécessaires et enregistrez.', 'info');
   }
   
-  resetForm() {
-    this.currentInfractionId = null;
-    this.isNewReport = true;
-    this.photoFile = null;
-    this.photoUrl = null;
-    
-    if (this.saveBtn) this.saveBtn.style.display = '';
-    if (this.modifyBtn) this.modifyBtn.style.display = 'none';
-    if (this.duplicateBtnContainer) this.duplicateBtnContainer.style.display = 'none';
-    
-    if (this.form) this.form.reset();
-    
-    if (this.photoPreviewContainer) this.photoPreviewContainer.style.display = 'none';
-    if (this.capturePhotoBtn) this.capturePhotoBtn.textContent = '📷 Prendre une photo';
-    
-    if (this.trailSelect) {
-      this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
-      this.trailSelect.disabled = true;
-    }
-    if (this.offPiste) {
-      this.offPiste.checked = false;
-      this.offPiste.disabled = true;
-    }
-    
-    this.setDefaultValues();
-    console.log('PatrolForm: Form reset');
-  }
-  
-  duplicateReport() {
-    if (!this.currentInfractionId) return;
-    
-    this.currentInfractionId = null;
-    this.isNewReport = true;
-    this.setDefaultValues();
-    
-    if (this.saveBtn) this.saveBtn.style.display = '';
-    if (this.modifyBtn) this.modifyBtn.style.display = 'none';
-    if (this.duplicateBtnContainer) this.duplicateBtnContainer.style.display = 'none';
-    if (this.surveySelector) this.surveySelector.value = 'new';
-    
-    showMessage('Rapport dupliqué. Modifiez si nécessaire puis enregistrez.', 'info');
-  }
-  
   handleSectorChange(e) {
     const sectorId = e.target.value;
     
-    if (this.trailSelect) this.trailSelect.innerHTML = '';
-    if (this.offPiste) {
-      this.offPiste.checked = false;
-      this.offPiste.disabled = true;
-    }
+    // Reset trail select
+    this.trailSelect.innerHTML = '';
+    this.offPiste.checked = false;
+    this.offPiste.disabled = true;
     
     if (!sectorId) {
-      if (this.trailSelect) {
-        this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
-        this.trailSelect.disabled = true;
-      }
+      this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
+      this.trailSelect.disabled = true;
       return;
     }
     
-    const trails = typeof getTrailsForSector === 'function' ? getTrailsForSector(sectorId) : [];
+    // Populate trails for selected sector
+    const trails = getTrailsForSector(sectorId);
     
-    if (this.trailSelect) {
-      this.trailSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
-      trails.forEach(trail => {
-        const option = document.createElement('option');
-        option.value = trail;
-        option.textContent = trail;
-        this.trailSelect.appendChild(option);
-      });
-      this.trailSelect.disabled = false;
-    }
+    this.trailSelect.innerHTML = '<option value="">-- Sélectionner (optionnel) --</option>';
+    trails.forEach(trail => {
+      const option = document.createElement('option');
+      option.value = trail;
+      option.textContent = trail;
+      this.trailSelect.appendChild(option);
+    });
+    
+    this.trailSelect.disabled = false;
   }
   
   handleTrailChange(e) {
     const trailValue = e.target.value;
-    if (this.offPiste) {
-      this.offPiste.disabled = !trailValue;
-      if (!trailValue) this.offPiste.checked = false;
+    this.offPiste.disabled = !trailValue;
+    if (!trailValue) {
+      this.offPiste.checked = false;
     }
   }
   
@@ -318,18 +230,21 @@ class PatrolForm {
     if (!file) return;
     
     try {
+      // Compress image
       const compressedBlob = await compressImage(file, 1200, 0.8);
       this.photoFile = new File([compressedBlob], file.name, { type: 'image/jpeg' });
       
+      // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (this.photoPreview) this.photoPreview.src = e.target.result;
-        if (this.photoPreviewContainer) this.photoPreviewContainer.style.display = '';
-        if (this.capturePhotoBtn) this.capturePhotoBtn.textContent = '📷 Changer la photo';
+        this.photoPreview.src = e.target.result;
+        this.photoPreviewContainer.style.display = '';
+        this.capturePhotoBtn.textContent = '📷 Changer la photo';
       };
       reader.readAsDataURL(this.photoFile);
+      
     } catch (error) {
-      console.error('PatrolForm: Error processing photo:', error);
+      console.error('Error processing photo:', error);
       showMessage('Erreur lors du traitement de la photo', 'error');
     }
   }
@@ -337,143 +252,219 @@ class PatrolForm {
   removePhoto() {
     this.photoFile = null;
     this.photoUrl = null;
-    if (this.photoInput) this.photoInput.value = '';
-    if (this.photoPreviewContainer) this.photoPreviewContainer.style.display = 'none';
-    if (this.capturePhotoBtn) this.capturePhotoBtn.textContent = '📷 Prendre une photo';
+    this.photoInput.value = '';
+    this.photoPreviewContainer.style.display = 'none';
+    this.capturePhotoBtn.textContent = '📷 Prendre une photo';
   }
   
   async uploadPhoto() {
     if (!this.photoFile) return this.photoUrl;
     
-    try {
-      const timestamp = Date.now();
-      const userId = getCurrentUserId();
-      const fileName = `infractions/${userId}/${timestamp}_${this.photoFile.name}`;
-      const storageRef = storage.ref(fileName);
-      
-      const snapshot = await storageRef.put(this.photoFile);
-      return await snapshot.ref.getDownloadURL();
-    } catch (error) {
-      console.error('PatrolForm: Error uploading photo:', error);
-      throw error;
-    }
+    const timestamp = Date.now();
+    const fileName = `infractions/${getCurrentUserId()}/${timestamp}_${this.photoFile.name}`;
+    const storageRef = storage.ref(fileName);
+    
+    const snapshot = await storageRef.put(this.photoFile);
+    return await snapshot.ref.getDownloadURL();
   }
   
+  /**
+   * Validate the form - only date, time, and offender name are required
+   */
   validateForm() {
+    let isValid = true;
     const errors = [];
     
-    if (!this.offenceDate?.value) errors.push('Date requise');
-    if (!this.offenceTime?.value) errors.push('Heure requise');
-    if (!this.offenderName?.value?.trim()) errors.push('Nom du contrevenant requis');
-    if (!this.sectorSelect?.value) errors.push('Secteur requis');
-    if (!this.trailSelect?.value) errors.push('Piste requise');
-    if (!this.practiceSelect?.value) errors.push('Type de pratique requis');
-    if (!this.offenceType?.value?.trim()) errors.push('Description requise');
-    
-    if (errors.length > 0) {
-      showMessage('Champs obligatoires manquants: ' + errors.join(', '), 'warning');
-      return false;
+    // Check date (required)
+    if (!this.offenceDate.value) {
+      isValid = false;
+      errors.push('La date est requise');
+      this.offenceDate.classList.add('is-invalid');
+    } else {
+      this.offenceDate.classList.remove('is-invalid');
     }
-    return true;
+    
+    // Check time (required)
+    if (!this.offenceTime.value) {
+      isValid = false;
+      errors.push('L\'heure est requise');
+      this.offenceTime.classList.add('is-invalid');
+    } else {
+      this.offenceTime.classList.remove('is-invalid');
+    }
+    
+    // Check offender name (required)
+    if (!this.offenderName.value.trim()) {
+      isValid = false;
+      errors.push('Le prénom et nom du contrevenant est requis');
+      this.offenderName.classList.add('is-invalid');
+    } else {
+      this.offenderName.classList.remove('is-invalid');
+    }
+    
+    // Show errors if any
+    if (!isValid) {
+      showMessage(errors.join('<br>'), 'error');
+    }
+    
+    return isValid;
   }
   
   async handleSubmit(e) {
     e.preventDefault();
-    console.log('PatrolForm: handleSubmit called, isNewReport:', this.isNewReport);
     
-    if (!this.validateForm()) return;
+    if (!this.isNewReport) return;
     
-    if (!this.isNewReport) {
-      showMessage('Pour modifier, utilisez "Sauvegarder les modifications"', 'info');
+    // Validate form
+    if (!this.validateForm()) {
       return;
     }
     
-    if (!this.saveBtn) return;
     setButtonLoading(this.saveBtn, true);
     
     try {
+      // Upload photo if exists
       const photoUrl = await this.uploadPhoto();
+      
+      // Combine date and time
       const offenceDateTime = new Date(`${this.offenceDate.value}T${this.offenceTime.value}`);
       
+      // Prepare data
       const infractionData = {
-        patrolName: this.userData?.name || this.patrolName?.value || 'Unknown',
         patrolId: getCurrentUserId(),
+        patrolName: this.userData.name,
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
         offenderImageUrl: photoUrl || null,
-        sector: this.sectorSelect.value,
-        trail: this.trailSelect.value,
-        offPiste: this.offPiste?.checked || false,
-        practice: this.practiceSelect.value,
-        offenceType: this.offenceType.value.trim(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        modifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        sector: this.sectorSelect.value || null,
+        trail: this.trailSelect.value || null,
+        offPiste: this.offPiste.checked,
+        practice: this.practiceSelect.value || null,
+        offenceType: this.offenceType.value.trim() || null,
         archived: false,
-        adminComments: '',
-        adminModifiedAt: null,
-        archivedAt: null
+        adminComments: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        modifiedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
       
-      console.log('PatrolForm: Saving infraction:', infractionData);
+      // Save to Firestore
       const docRef = await db.collection('infractions').add(infractionData);
-      console.log('PatrolForm: Saved with ID:', docRef.id);
       
       showMessage('Rapport enregistré avec succès!', 'success');
-      await this.loadUserInfractions();
+      
+      // Reset form
       this.resetForm();
       
+      // Reload infractions list
+      await this.loadUserInfractions();
+      
     } catch (error) {
-      console.error('PatrolForm: Error saving:', error);
-      showMessage('Erreur: ' + error.message, 'error');
+      console.error('Error saving infraction:', error);
+      showMessage('Erreur lors de l\'enregistrement du rapport: ' + error.message, 'error');
     } finally {
       setButtonLoading(this.saveBtn, false);
     }
   }
   
   async handleModify() {
-    if (!this.currentInfractionId) {
-      showMessage('Aucun rapport sélectionné', 'warning');
+    if (!this.currentInfractionId) return;
+    
+    // Validate form
+    if (!this.validateForm()) {
       return;
     }
-    
-    if (!this.validateForm()) return;
-    if (!this.modifyBtn) return;
     
     setButtonLoading(this.modifyBtn, true);
     
     try {
-      let photoUrl = this.photoUrl;
-      if (this.photoFile) {
-        photoUrl = await this.uploadPhoto();
-      }
+      // Upload new photo if exists
+      const photoUrl = await this.uploadPhoto();
       
+      // Combine date and time
       const offenceDateTime = new Date(`${this.offenceDate.value}T${this.offenceTime.value}`);
       
+      // Prepare update data
       const updateData = {
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
-        offenderImageUrl: photoUrl || null,
-        sector: this.sectorSelect.value,
-        trail: this.trailSelect.value,
-        offPiste: this.offPiste?.checked || false,
-        practice: this.practiceSelect.value,
-        offenceType: this.offenceType.value.trim(),
+        offenderImageUrl: photoUrl || this.photoUrl || null,
+        sector: this.sectorSelect.value || null,
+        trail: this.trailSelect.value || null,
+        offPiste: this.offPiste.checked,
+        practice: this.practiceSelect.value || null,
+        offenceType: this.offenceType.value.trim() || null,
         modifiedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
       
+      // Update in Firestore
       await db.collection('infractions').doc(this.currentInfractionId).update(updateData);
+      
       showMessage('Modifications enregistrées!', 'success');
+      
+      // Reload infractions list
       await this.loadUserInfractions();
       
     } catch (error) {
-      console.error('PatrolForm: Error updating:', error);
-      showMessage('Erreur: ' + error.message, 'error');
+      console.error('Error updating infraction:', error);
+      showMessage('Erreur lors de la modification', 'error');
     } finally {
       setButtonLoading(this.modifyBtn, false);
     }
   }
+  
+  duplicateReport() {
+    // Keep form data but reset for new report
+    this.currentInfractionId = null;
+    this.isNewReport = true;
+    
+    // Reset timestamps
+    const now = new Date();
+    this.offenceDate.value = now.toISOString().split('T')[0];
+    this.offenceTime.value = now.toTimeString().slice(0, 5);
+    
+    // Show/hide buttons
+    this.saveBtn.style.display = '';
+    this.modifyBtn.style.display = 'none';
+    this.duplicateBtnContainer.style.display = 'none';
+    
+    // Reset selector
+    this.surveySelector.value = 'new';
+    
+    showMessage('Rapport dupliqué. Modifiez si nécessaire et enregistrez.', 'info');
+  }
+  
+  resetForm() {
+    this.currentInfractionId = null;
+    this.isNewReport = true;
+    
+    // Show/hide buttons
+    this.saveBtn.style.display = '';
+    this.modifyBtn.style.display = 'none';
+    this.duplicateBtnContainer.style.display = 'none';
+    
+    // Reset selector
+    this.surveySelector.value = 'new';
+    
+    // Reset fields
+    this.setDefaultValues();
+    this.offenderName.value = '';
+    this.sectorSelect.value = '';
+    this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
+    this.trailSelect.disabled = true;
+    this.offPiste.checked = false;
+    this.offPiste.disabled = true;
+    this.practiceSelect.value = '';
+    this.offenceType.value = '';
+    
+    // Reset photo
+    this.removePhoto();
+    
+    // Remove validation classes
+    this.offenceDate.classList.remove('is-invalid');
+    this.offenceTime.classList.remove('is-invalid');
+    this.offenderName.classList.remove('is-invalid');
+  }
 }
 
 // Initialize patrol form
-console.log('PatrolForm: Script loaded, creating instance...');
 const patrolForm = new PatrolForm();

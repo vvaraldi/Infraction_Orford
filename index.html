@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Infractions - Mont Orford</title>
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
 </head>
 
@@ -45,14 +44,21 @@
   </div>
   
   <!-- Main content -->
-  <div id="main-content" class="main infraction-main" style="display: none;">
+  <div id="main-content" class="main" style="display: none;">
+    
+    <!-- Quick link to Ski-Track -->
+    <div class="quick-link-bar">
+      <a href="https://trail-inspection.web.app" target="_blank" class="quick-link">
+        🏔️ Accéder à Ski-Track →
+      </a>
+    </div>
     
     <div class="page-header">
       <h1 class="page-title">Rapport d'infraction</h1>
     </div>
     
     <!-- Survey selector -->
-    <div class="card selector-card">
+    <div class="card">
       <div class="card-header">
         <h2 class="card-title">📋 Sélection du rapport</h2>
       </div>
@@ -64,7 +70,7 @@
             <!-- Existing surveys will be loaded here -->
           </select>
         </div>
-        <div id="duplicate-btn-container" style="display: none; margin-top: 1rem;">
+        <div id="duplicate-btn-container" style="display: none;">
           <button class="btn btn-secondary" id="duplicate-btn">
             📋 Dupliquer ce rapport
           </button>
@@ -73,7 +79,7 @@
     </div>
     
     <!-- Survey form -->
-    <form id="infraction-form" class="card form-card">
+    <form id="infraction-form" class="card">
       <div class="card-header">
         <h2 class="card-title">📝 Détails de l'infraction</h2>
       </div>
@@ -91,13 +97,13 @@
         <!-- Date/Time -->
         <div class="form-section">
           <h3 class="form-section-title">Date et heure de l'infraction</h3>
-          <div class="form-row two-cols">
+          <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="offence-date">Date</label>
+              <label class="form-label" for="offence-date">Date <span class="required-star">*</span></label>
               <input type="date" class="form-input" id="offence-date" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="offence-time">Heure</label>
+              <label class="form-label" for="offence-time">Heure <span class="required-star">*</span></label>
               <input type="time" class="form-input" id="offence-time" required>
             </div>
           </div>
@@ -107,18 +113,18 @@
         <div class="form-section">
           <h3 class="form-section-title">Contrevenant</h3>
           <div class="form-group">
-            <label class="form-label" for="offender-name">Nom du contrevenant</label>
-            <input type="text" class="form-input" id="offender-name" placeholder="Nom complet" required>
+            <label class="form-label" for="offender-name">Prénom et Nom du Contrevenant <span class="required-star">*</span></label>
+            <input type="text" class="form-input" id="offender-name" placeholder="Prénom et nom complet" required>
           </div>
           
           <div class="form-group">
-            <label class="form-label">Photo du contrevenant (optionnel)</label>
+            <label class="form-label">Photo du contrevenant <span class="optional-label">(optionnel)</span></label>
             <div class="photo-capture-container">
               <input type="file" id="offender-photo" accept="image/*" capture="environment" style="display: none;">
               <button type="button" class="btn btn-secondary" id="capture-photo-btn">
                 📷 Prendre une photo
               </button>
-              <div id="photo-preview-container" style="display: none; margin-top: 1rem;">
+              <div id="photo-preview-container" style="display: none;">
                 <img id="photo-preview" class="photo-preview" alt="Aperçu">
                 <button type="button" class="btn btn-danger btn-sm" id="remove-photo-btn">✕ Supprimer</button>
               </div>
@@ -128,11 +134,11 @@
         
         <!-- Location -->
         <div class="form-section">
-          <h3 class="form-section-title">Localisation</h3>
+          <h3 class="form-section-title">Localisation <span class="optional-label">(optionnel)</span></h3>
           <div class="form-group">
             <label class="form-label" for="sector-select">Secteur</label>
-            <select class="form-select" id="sector-select" required>
-              <option value="">-- Sélectionner le secteur --</option>
+            <select class="form-select" id="sector-select">
+              <option value="">-- Aucun secteur sélectionné --</option>
               <option value="mont-orford">Mont-Orford</option>
               <option value="giroux-nord">Mont Giroux Nord</option>
               <option value="giroux-est">Mont Giroux Est</option>
@@ -144,7 +150,7 @@
           
           <div class="form-group">
             <label class="form-label" for="trail-select">Piste / Sentier</label>
-            <select class="form-select" id="trail-select" required disabled>
+            <select class="form-select" id="trail-select" disabled>
               <option value="">-- Sélectionner d'abord un secteur --</option>
             </select>
           </div>
@@ -159,11 +165,11 @@
         
         <!-- Practice type -->
         <div class="form-section">
-          <h3 class="form-section-title">Pratique</h3>
+          <h3 class="form-section-title">Pratique <span class="optional-label">(optionnel)</span></h3>
           <div class="form-group">
             <label class="form-label" for="practice-select">Type de pratique</label>
-            <select class="form-select" id="practice-select" required>
-              <option value="">-- Sélectionner --</option>
+            <select class="form-select" id="practice-select">
+              <option value="">-- Non spécifié --</option>
               <option value="ski-alpin">Ski alpin</option>
               <option value="planche">Planche à neige</option>
               <option value="randonnee-alpine">Randonnée alpine</option>
@@ -175,10 +181,10 @@
         
         <!-- Offence details -->
         <div class="form-section">
-          <h3 class="form-section-title">Infraction</h3>
+          <h3 class="form-section-title">Infraction <span class="optional-label">(optionnel)</span></h3>
           <div class="form-group">
             <label class="form-label" for="offence-type">Description de l'infraction</label>
-            <textarea class="form-textarea" id="offence-type" rows="4" placeholder="Décrivez l'infraction..." required></textarea>
+            <textarea class="form-textarea" id="offence-type" rows="4" placeholder="Décrivez l'infraction..."></textarea>
           </div>
         </div>
         
@@ -186,10 +192,10 @@
       
       <div class="card-footer">
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary btn-lg" id="save-btn">
+          <button type="submit" class="btn btn-primary" id="save-btn">
             💾 Enregistrer le rapport
           </button>
-          <button type="button" class="btn btn-secondary btn-lg" id="modify-btn" style="display: none;">
+          <button type="button" class="btn btn-secondary" id="modify-btn" style="display: none;">
             ✏️ Sauvegarder les modifications
           </button>
         </div>

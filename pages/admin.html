@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administration - Infractions Mont Orford</title>
   <link rel="stylesheet" href="../css/main.css">
-  <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
 </head>
 
@@ -40,26 +39,21 @@
   <div id="loading" class="loading-screen">
     <div class="loading-content">
       <div class="loading-spinner"></div>
-      <p>Vérification des permissions...</p>
+      <p>Vérification de l'authentification...</p>
     </div>
   </div>
   
   <!-- Main content -->
-  <div id="main-content" class="main admin-main" style="display: none;">
+  <div id="main-content" class="main" style="display: none;">
     
     <div class="page-header">
       <h1 class="page-title">Administration</h1>
-      <div class="user-info">
-        Connecté: <strong id="admin-name"></strong>
-      </div>
     </div>
     
     <!-- Tabs -->
-    <div class="tabs-container">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="infractions">📋 Infractions</button>
-        <button class="tab-btn" data-tab="users">👥 Utilisateurs</button>
-      </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="infractions">📋 Infractions</button>
+      <button class="tab-btn" data-tab="users">👥 Utilisateurs</button>
     </div>
     
     <!-- Infractions Tab -->
@@ -75,7 +69,16 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
+          <!-- Sort controls -->
+          <div class="sort-controls" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <label class="form-label" for="sort-by" style="margin-bottom: 0; white-space: nowrap;">Trier par :</label>
+            <select class="form-select" id="sort-by" style="max-width: 250px;">
+              <option value="date">Date (plus récent en premier)</option>
+              <option value="offender">Contrevenant (A → Z)</option>
+            </select>
+          </div>
+          
+          <div class="table-container">
             <table class="data-table" id="infractions-table">
               <thead>
                 <tr>
@@ -106,7 +109,7 @@
           <button class="btn btn-primary" id="add-user-btn">+ Ajouter un utilisateur</button>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
+          <div class="table-container">
             <table class="data-table" id="users-table">
               <thead>
                 <tr>
@@ -128,16 +131,13 @@
       </div>
     </div>
     
-    <!-- Status messages -->
-    <div id="status-messages" class="status-messages"></div>
-    
   </div>
   
   <!-- Infraction Detail Modal -->
   <div class="modal" id="infraction-modal">
     <div class="modal-content modal-large">
       <div class="modal-header">
-        <h3 class="modal-title">Détails de l'infraction</h3>
+        <h2 class="modal-title">Détails de l'infraction</h2>
         <button class="modal-close" id="close-infraction-modal">✕</button>
       </div>
       <div class="modal-body" id="infraction-modal-body">
@@ -155,7 +155,7 @@
   <div class="modal" id="user-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="user-modal-title">Nouvel utilisateur</h3>
+        <h2 class="modal-title" id="user-modal-title">Ajouter un utilisateur</h2>
         <button class="modal-close" id="close-user-modal">✕</button>
       </div>
       <div class="modal-body">
@@ -171,12 +171,11 @@
           <div class="form-group" id="password-group">
             <label class="form-label" for="user-password">Mot de passe</label>
             <input type="password" class="form-input" id="user-password" minlength="6">
-            <small class="form-help">Minimum 6 caractères</small>
           </div>
           <div class="form-group">
             <label class="form-label" for="user-role">Rôle</label>
             <select class="form-select" id="user-role" required>
-              <option value="patrol">Patrouilleur</option>
+              <option value="inspector">Inspecteur</option>
               <option value="admin">Administrateur</option>
             </select>
           </div>
