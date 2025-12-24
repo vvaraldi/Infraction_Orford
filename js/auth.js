@@ -96,7 +96,7 @@ function checkAuthStatus() {
       
       // Check if we're already on the login page
       if (!window.location.pathname.includes('login.html')) {
-        window.location.href = 'login.html';
+        redirectToLogin();
       }
     }
   });
