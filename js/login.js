@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-  const loginForm = document.getElementById('login-Form');
+  const loginForm = document.getElementById('login-form');
   const errorMessage = document.getElementById('error-message');
   const successMessage = document.getElementById('success-message');
   
