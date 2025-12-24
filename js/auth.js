@@ -29,6 +29,7 @@ let currentUserData = null;
 
 /**
  * Check authentication status and handle redirects
+ * UPDATED: Now checks for allowInfraction access
  */
 function checkAuthStatus() {
   const loading = document.getElementById('loading');
@@ -52,64 +53,145 @@ function checkAuthStatus() {
           
           // Check if user is active
           if (currentUserData.status !== 'active') {
+            showAccessDenied('Votre compte a été désactivé. Contactez l\'administrateur.');
+            await auth.signOut();
+            return;
+          }
+          
+          // NEW: Check if user has infraction access
+          if (currentUserData.allowInfraction !== true) {
+            showAccessDenied('Vous n\'avez pas accès au système d\'infractions. Contactez l\'administrateur.');
+            await auth.signOut();
+            return;
+          }
+          
+          // User is authorized - show content
+          if (loading) loading.style.display = 'none';
+          if (mainContent) mainContent.style.display = 'block';
+          
+          // Update UI based on role
+          updateUIForRole(currentUserData.role);
+          
+          // Dispatch authenticated event
+          document.dispatchEvent(new CustomEvent('userAuthenticated', {
+            detail: currentUserData
+          }));
+          
+        } else {
+          // User not found in inspectors collection
+          showAccessDenied('Utilisateur non trouvé. Contactez l\'administrateur.');
+          await auth.signOut();
+        }
+        
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        showAccessDenied('Erreur lors de la vérification des accès.');
+        await auth.signOut();
+      }
+      
+    } else {
+      // Not logged in - redirect to login
+      currentUser = null;
+      currentUserData = null;
+      
+      // Check if we're already on the login page
+      if (!window.location.pathname.includes('login.html')) {
+        window.location.href = 'login.html';
+      }
+    }
+  });
+}
+
+
+/**
+ * Complete updated function - copy this to replace your existing checkAuthStatus
+ */
+function checkAuthStatusComplete() {
+  const loading = document.getElementById('loading');
+  const mainContent = document.getElementById('main-content');
+  const loginLink = document.getElementById('login-link');
+  const mobileLoginLink = document.getElementById('mobile-login-link');
+  const adminLink = document.getElementById('admin-link');
+  const mobileAdminLink = document.getElementById('mobile-admin-link');
+  
+  auth.onAuthStateChanged(async function(user) {
+    if (user) {
+      currentUser = user;
+      
+      try {
+        // Get user data from inspectors collection
+        const inspectorDoc = await db.collection('inspectors').doc(user.uid).get();
+        
+        if (inspectorDoc.exists) {
+          currentUserData = inspectorDoc.data();
+          currentUserData.uid = user.uid;
+          
+          // Check 1: Is user active?
+          if (currentUserData.status !== 'active') {
             alert('Votre compte a été désactivé. Contactez l\'administrateur.');
             await auth.signOut();
             redirectToLogin();
             return;
           }
           
-          // Update UI for logged in user
-          if (loginLink) {
-            loginLink.textContent = 'Déconnexion';
-            loginLink.href = '#';
-            loginLink.onclick = handleLogout;
-          }
-          if (mobileLoginLink) {
-            mobileLoginLink.textContent = 'Déconnexion';
-            mobileLoginLink.href = '#';
-            mobileLoginLink.onclick = handleLogout;
+          // Check 2: Does user have infraction access?
+          if (currentUserData.allowInfraction !== true) {
+            alert('Vous n\'avez pas accès au système d\'infractions.\nContactez l\'administrateur pour obtenir les accès.');
+            await auth.signOut();
+            redirectToLogin();
+            return;
           }
           
-          // Show admin link if user is admin
-          if (currentUserData.role === 'admin') {
-            if (adminLink) adminLink.style.display = '';
-            if (mobileAdminLink) mobileAdminLink.style.display = '';
-          }
+          // ✓ All checks passed - user is authorized
           
           // Hide loading, show content
           if (loading) loading.style.display = 'none';
           if (mainContent) mainContent.style.display = 'block';
           
-          // Trigger custom event for page-specific initialization
-          document.dispatchEvent(new CustomEvent('userAuthenticated', { 
-            detail: currentUserData 
+          // Update login/logout links
+          if (loginLink) {
+            loginLink.textContent = 'Déconnexion';
+            loginLink.href = '#';
+            loginLink.onclick = logout;
+          }
+          if (mobileLoginLink) {
+            mobileLoginLink.textContent = 'Déconnexion';
+            mobileLoginLink.href = '#';
+            mobileLoginLink.onclick = logout;
+          }
+          
+          // Show admin link if user is admin
+          if (currentUserData.role === 'admin') {
+            if (adminLink) adminLink.style.display = 'block';
+            if (mobileAdminLink) mobileAdminLink.style.display = 'block';
+          }
+          
+          // Dispatch event for other modules
+          document.dispatchEvent(new CustomEvent('userAuthenticated', {
+            detail: currentUserData
           }));
           
         } else {
-          console.error('User not found in inspectors collection');
-          alert('Votre compte n\'est pas configuré correctement. Contactez l\'administrateur.');
+          // User document not found
+          alert('Utilisateur non trouvé dans la base de données.');
           await auth.signOut();
           redirectToLogin();
         }
         
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        if (loading) loading.style.display = 'none';
-        alert('Erreur lors du chargement des données utilisateur.');
+        console.error('Error checking auth status:', error);
+        alert('Erreur lors de la vérification des accès.');
+        await auth.signOut();
+        redirectToLogin();
       }
       
     } else {
-      // User not logged in
+      // Not logged in
       currentUser = null;
       currentUserData = null;
       
-      // Redirect to login if on protected page
-      const currentPage = window.location.pathname;
-      if (!currentPage.includes('login.html')) {
+      if (!window.location.pathname.includes('login.html')) {
         redirectToLogin();
-      } else {
-        if (loading) loading.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'block';
       }
     }
   });
@@ -211,6 +293,70 @@ function isAdmin() {
  */
 function getFirebaseConfig() {
   return firebaseConfig;
+}
+
+/**
+ * Display access denied message and redirect
+ * @param {string} message - The message to display
+ */
+function showAccessDenied(message) {
+  const loading = document.getElementById('loading');
+  const mainContent = document.getElementById('main-content');
+  
+  // Hide loading and main content
+  if (loading) loading.style.display = 'none';
+  if (mainContent) mainContent.style.display = 'none';
+  
+  // Create and show access denied overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'access-denied-overlay';
+  overlay.innerHTML = `
+    <div class="access-denied-container">
+      <div class="access-denied-icon">🚫</div>
+      <h2>Accès Refusé</h2>
+      <p>${message}</p>
+      <div class="access-denied-actions">
+        <a href="login.html" class="btn btn-primary">Retour à la connexion</a>
+      </div>
+    </div>
+  `;
+  
+  // Add styles
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  `;
+  
+  const container = overlay.querySelector('.access-denied-container');
+  container.style.cssText = `
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  `;
+  
+  const icon = overlay.querySelector('.access-denied-icon');
+  icon.style.cssText = `
+    font-size: 64px;
+    margin-bottom: 20px;
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Auto redirect after 5 seconds
+  setTimeout(() => {
+    window.location.href = 'login.html';
+  }, 5000);
 }
 
 // Initialize auth check on page load

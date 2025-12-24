@@ -11,6 +11,9 @@ Liste des infractions
 - Ski piste fermée
 - Saut des chaises
 - Manoeuvre dangereuse
+- Autres (voir commentaire)
+
+Nous devons ajouter un tag à nos users car une personne peut faire de l'inspection seulement ou infraction ou les deux. Pareil pour les admins !
 
 
 Priorité 2
