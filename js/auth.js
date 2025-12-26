@@ -72,6 +72,9 @@ function checkAuthStatus() {
           // Update UI based on role
           updateUIForRole(currentUserData.role);
           
+          // Update Ski-Track link visibility based on inspection access
+          updateSkiTrackLinkVisibility(currentUserData);
+          
           // Dispatch authenticated event
           document.dispatchEvent(new CustomEvent('userAuthenticated', {
             detail: currentUserData
@@ -128,6 +131,34 @@ function updateUIForRole(role) {
     mobileLoginLink.textContent = 'Déconnexion';
     mobileLoginLink.href = '#';
     mobileLoginLink.onclick = handleLogout;
+  }
+}
+
+/**
+ * Update Ski-Track link visibility based on user's inspection access
+ * Users who are in the inspectors collection (active status) have inspection access
+ * unless explicitly denied via a field like allowInspection = false
+ * @param {Object} userData - User data from inspectors collection
+ */
+function updateSkiTrackLinkVisibility(userData) {
+  const skitrackLink = document.getElementById('skitrack-link');
+  const skitrackDivider = document.getElementById('skitrack-divider');
+  const mobileSkitrackLink = document.getElementById('mobile-skitrack-link');
+  
+  // Check if user has inspection access
+  // By default, users in the inspectors collection have access unless explicitly set to false
+  const hasInspectionAccess = userData.allowInspection !== false;
+  
+  if (hasInspectionAccess) {
+    // Show Ski-Track links
+    if (skitrackLink) skitrackLink.style.display = 'inline-flex';
+    if (skitrackDivider) skitrackDivider.style.display = 'inline-block';
+    if (mobileSkitrackLink) mobileSkitrackLink.style.display = 'block';
+  } else {
+    // Hide Ski-Track links
+    if (skitrackLink) skitrackLink.style.display = 'none';
+    if (skitrackDivider) skitrackDivider.style.display = 'none';
+    if (mobileSkitrackLink) mobileSkitrackLink.style.display = 'none';
   }
 }
 
@@ -243,6 +274,14 @@ function getCurrentUserId() {
  */
 function isAdmin() {
   return currentUserData && currentUserData.role === 'admin';
+}
+
+/**
+ * Check if current user has inspection access
+ * @returns {boolean} True if has inspection access
+ */
+function hasInspectionAccess() {
+  return currentUserData && currentUserData.allowInspection !== false;
 }
 
 /**
