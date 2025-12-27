@@ -310,7 +310,7 @@ class PatrolForm {
   }
   
   /**
-   * Validate the form - date, time, offender name, fault, and sector are required
+   * Validate the form - date, time, (offender name OR photo), fault, and sector are required
    */
   validateForm() {
     let isValid = true;
@@ -334,13 +334,18 @@ class PatrolForm {
       this.offenceTime.classList.remove('is-invalid');
     }
     
-    // Check offender name (required)
-    if (!this.offenderName.value.trim()) {
+    // Check offender name OR photo (at least one required)
+    const hasName = this.offenderName.value.trim() !== '';
+    const hasPhoto = this.photoFile !== null || this.photoUrl !== null;
+    
+    if (!hasName && !hasPhoto) {
       isValid = false;
-      errors.push('Le prénom et nom du contrevenant est requis');
+      errors.push('Le nom du contrevenant OU une photo est requis');
       this.offenderName.classList.add('is-invalid');
+      this.capturePhotoBtn.classList.add('is-invalid');
     } else {
       this.offenderName.classList.remove('is-invalid');
+      this.capturePhotoBtn.classList.remove('is-invalid');
     }
     
     // Check fault type (required)
@@ -529,6 +534,7 @@ class PatrolForm {
     this.offenderName.classList.remove('is-invalid');
     this.faultSelect.classList.remove('is-invalid');
     this.sectorSelect.classList.remove('is-invalid');
+    this.capturePhotoBtn.classList.remove('is-invalid');
   }
 }
 
