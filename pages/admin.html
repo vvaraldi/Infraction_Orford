@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="../css/infractions-fixes.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
   <style>
-    /* Ski-Track link styling */
-    .skitrack-link {
+    /* Portal link styling */
+    .portal-link {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
@@ -20,10 +20,10 @@
       transition: background 0.2s;
       text-decoration: none !important;
     }
-    .skitrack-link:hover {
+    .portal-link:hover {
       background: rgba(255, 255, 255, 0.15);
     }
-    .skitrack-logo {
+    .portal-logo {
       width: 20px;
       height: 20px;
       opacity: 0.9;
@@ -46,18 +46,16 @@
         <a href="../index.html">Rapport</a>
         <a href="admin.html" class="active">Admin</a>
         <a href="#" id="login-link">Déconnexion</a>
-        <!-- Ski-Track Link (shown only for users with inspection access) -->
-        <span class="nav-divider" id="skitrack-divider" style="display: none;"></span>
-        <a href="https://vvaraldi.github.io/Inspection_Rando_Orford/index.html" 
-           target="_blank" 
-           id="skitrack-link" 
-           class="skitrack-link" 
-           style="display: none;"
-           title="Accéder à Ski-Track (Inspection)">
-          <svg class="skitrack-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <!-- Portal Link -->
+        <span class="nav-divider" id="portal-divider"></span>
+        <a href="https://vvaraldi.github.io/Orford_Patrouille/index.html" 
+           id="portal-link" 
+           class="portal-link" 
+           title="Retour au menu principal">
+          <svg class="portal-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
             <path d="M100 0 L200 200 L0 200 Z" fill="currentColor"/>
           </svg>
-          Ski-Track
+          Menu principal
         </a>
       </div>
       <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
@@ -73,15 +71,13 @@
         <a href="../index.html">Rapport</a>
         <a href="admin.html" class="active">Admin</a>
         <a href="#" id="mobile-login-link">Déconnexion</a>
-        <!-- Ski-Track Link for mobile -->
-        <a href="https://vvaraldi.github.io/Inspection_Rando_Orford/index.html" 
-           target="_blank" 
-           id="mobile-skitrack-link" 
-           style="display: none;">
+        <!-- Portal Link for mobile -->
+        <a href="https://vvaraldi.github.io/Orford_Patrouille/index.html" 
+           id="mobile-portal-link">
           <svg style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
             <path d="M100 0 L200 200 L0 200 Z" fill="currentColor"/>
           </svg>
-          Ski-Track (Inspection)
+          Menu principal
         </a>
       </div>
     </div>
@@ -101,41 +97,40 @@
     <div class="page-header">
       <h1 class="page-title">Administration - Infractions</h1>
       <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">
-        <strong>Note:</strong> La gestion des utilisateurs passe l'app d'inspection de rando (Ski-Track).
+        <strong>Note:</strong> La gestion des utilisateurs se fait via le 
+        <a href="https://vvaraldi.github.io/Orford_Patrouille/pages/admin.html">Menu principal</a>.
       </p>
     </div>
     
-    <!-- Infractions Management (No tabs needed) -->
+    <!-- Infractions Management -->
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">📋 Gestion des infractions</h2>
+        <h2 class="card-title">📋 Liste des infractions</h2>
         <div class="card-actions">
-          <label class="checkbox-label" style="margin-right: 1rem;">
+          <label class="checkbox-label">
             <input type="checkbox" id="show-archived">
-            <span>Afficher les archives</span>
+            <span>Afficher les archivées</span>
           </label>
-          <select id="sort-by" class="form-select" style="width: auto;">
-            <option value="date">Trier par date</option>
-            <option value="offender">Trier par contrevenant</option>
-          </select>
+          <button class="btn btn-secondary btn-sm" id="refresh-btn">
+            🔄 Actualiser
+          </button>
         </div>
       </div>
-      
       <div class="card-body">
         <div class="table-container">
-          <table class="data-table">
+          <table class="table" id="infractions-table">
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Localisation</th>
+                <th>Type</th>
                 <th>Contrevenant</th>
-                <th>Infraction</th>
-                <th>Lieu</th>
-                <th>Patrouilleur</th>
+                <th>Inspecteur</th>
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="infractions-tbody">
+            <tbody>
               <tr>
                 <td colspan="7" class="text-center">Chargement des infractions...</td>
               </tr>
@@ -144,26 +139,7 @@
         </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Infraction Detail Modal -->
-  <div id="infraction-modal" class="modal">
-    <div class="modal-content modal-large">
-      <div class="modal-header">
-        <h3 class="modal-title">Détails de l'infraction</h3>
-        <button class="modal-close" id="close-infraction-modal">×</button>
-      </div>
-      
-      <div class="modal-body" id="infraction-modal-body">
-        <!-- Content loaded dynamically -->
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="close-infraction-btn">Fermer</button>
-        <button class="btn btn-warning" id="archive-btn">Archiver</button>
-        <button class="btn btn-primary" id="save-sanction-btn">Enregistrer la sanction</button>
-      </div>
-    </div>
+    
   </div>
   
   <!-- Firebase Scripts -->
@@ -172,9 +148,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
   
-  <!-- Application Scripts - USING EXISTING FILES -->
-  <script src="../js/common.js"></script>
+  <!-- Application Scripts -->
   <script src="../js/auth.js"></script>
+  <script src="../js/mobile-menu.js"></script>
   <script src="../js/admin.js"></script>
 </body>
 </html>
