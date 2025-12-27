@@ -133,7 +133,7 @@
             </div>
             <div class="form-section-body">
               <div class="form-group">
-                <label class="form-label" for="photo-input">Photo de l'infraction <span class="form-label-optional">(ou nom du contrevenant requis)</span></label>
+                <label class="form-label" for="photo-input">Photo de l'infraction <span class="form-label-optional">(optionnel)</span></label>
                 <input type="file" class="form-control" id="photo-input" accept="image/*" capture="environment">
                 <div id="photo-preview" class="photo-preview" style="display: none;">
                   <img id="preview-image" src="" alt="Aperçu">
@@ -168,15 +168,15 @@
             </div>
           </div>
           
-          <!-- Offender Section -->
+          <!-- Offender Section - UNCHANGED -->
           <div class="form-section">
             <div class="form-section-header">
-              <h3 class="form-section-title">👤 Contrevenant <span class="form-section-subtitle">(Prénom et nom)</span></h3>
+              <h3 class="form-section-title">👤 Contrevenant</h3>
             </div>
             <div class="form-section-body">
               <div class="form-group">
-                <label class="form-label" for="offender-name">Nom du contrevenant <span class="form-label-optional">(ou photo requise)</span></label>
-                <input type="text" class="form-control" id="offender-name" placeholder="Prénom et nom du contrevenant">
+                <label class="form-label" for="offender-name">Nom du contrevenant <span class="form-label-optional">(optionnel)</span></label>
+                <input type="text" class="form-control" id="offender-name" placeholder="Nom du contrevenant">
               </div>
             </div>
           </div>
@@ -240,9 +240,6 @@
               💾 Enregistrer le rapport
             </button>
           </div>
-          
-          <!-- Validation Error Message -->
-          <div id="validation-error" class="alert alert-danger" style="display: none; margin-top: 1rem;"></div>
           
         </form>
       </div>
