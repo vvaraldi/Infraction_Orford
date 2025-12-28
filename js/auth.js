@@ -184,9 +184,7 @@ function showAccessDenied(message) {
  * Redirect to login page
  */
 function redirectToLogin() {
-  const isInPages = window.location.pathname.includes('/pages/');
-  const loginUrl = isInPages ? 'login.html' : 'pages/login.html';
-  window.location.href = loginUrl;
+  window.location.href = 'https://vvaraldi.github.io/Orford_Patrouille/pages/login.html';
 }
 
 /**
