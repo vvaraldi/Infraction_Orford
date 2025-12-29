@@ -103,15 +103,19 @@
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">📋 Liste des infractions</h2>
-        <div class="card-actions">
-          <label class="checkbox-label">
-            <input type="checkbox" id="show-archived">
-            <span>Afficher les archivées</span>
-          </label>
-          <button class="btn btn-secondary btn-sm" id="refresh-btn">
-            🔄 Actualiser
-          </button>
-        </div>
+		<div class="card-actions">
+		  <select class="form-select" id="sort-by" style="width: auto; min-width: 140px;">
+			<option value="date">Date</option>
+			<option value="offender">Contrevenant</option>
+		  </select>
+		  <label class="checkbox-label">
+			<input type="checkbox" id="show-archived">
+			<span>Afficher les archivées</span>
+		  </label>
+		  <button class="btn btn-secondary btn-sm" id="refresh-btn">
+			🔄 Actualiser
+		  </button>
+		</div>
       </div>
       <div class="card-body">
         <div class="table-container">
