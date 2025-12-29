@@ -130,7 +130,7 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="infractions-tbody">
               <tr>
                 <td colspan="7" class="text-center">Chargement des infractions...</td>
               </tr>
@@ -139,6 +139,24 @@
         </div>
       </div>
     </div>
+
+		<!-- Infraction Detail Modal -->
+		<div class="modal" id="infraction-modal">
+		  <div class="modal-content modal-large">
+			<div class="modal-header">
+			  <h3 class="modal-title">Détails de l'infraction</h3>
+			  <button class="modal-close" id="close-infraction-modal">&times;</button>
+			</div>
+			<div class="modal-body" id="infraction-modal-body">
+			  <!-- Content loaded dynamically -->
+			</div>
+			<div class="modal-footer">
+			  <button class="btn btn-warning" id="archive-btn">Archiver</button>
+			  <button class="btn btn-primary" id="save-sanction-btn">Enregistrer sanction</button>
+			  <button class="btn btn-secondary" id="close-infraction-btn">Fermer</button>
+			</div>
+		  </div>
+		</div>
     
   </div>
   
@@ -149,8 +167,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
   
   <!-- Application Scripts -->
+  <script src="../js/common.js"></script>
   <script src="../js/auth.js"></script>
-  <script src="../js/mobile-menu.js"></script>
   <script src="../js/admin.js"></script>
 </body>
 </html>
