@@ -3,7 +3,6 @@
 
 
 Priorité 1
-But: Ajoute une gestion de reporting de signalisation appelé "signalisation".
 
 
 Priorité 2

@@ -15,13 +15,83 @@ const firebaseConfig = {
   measurementId: "G-EBLYWBM9YB"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Firebase services - will be initialized once Firebase SDK is ready
+let auth = null;
+let db = null;
+let storage = null;
+let firebaseInitialized = false;
 
-// Firebase services - initialize immediately (scripts are loaded in order)
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+/**
+ * Initialize Firebase - called when Firebase SDK is ready
+ * @returns {boolean} True if initialization succeeded
+ */
+function initializeFirebase() {
+  if (firebaseInitialized) return true;
+  
+  if (typeof firebase === 'undefined') {
+    console.error('Firebase SDK not loaded');
+    return false;
+  }
+  
+  try {
+    // Check if already initialized (prevents double init)
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
+    firebaseInitialized = true;
+    console.log('Firebase initialized successfully');
+    return true;
+  } catch (error) {
+    console.error('Error initializing Firebase:', error);
+    return false;
+  }
+}
+
+/**
+ * Wait for Firebase to be available
+ * @returns {Promise} Resolves when Firebase is ready
+ */
+function waitForFirebase() {
+  return new Promise((resolve, reject) => {
+    // If already initialized, resolve immediately
+    if (firebaseInitialized) {
+      resolve();
+      return;
+    }
+    
+    // If Firebase is available now, initialize and resolve
+    if (typeof firebase !== 'undefined' && firebase.apps !== undefined) {
+      if (initializeFirebase()) {
+        resolve();
+        return;
+      }
+    }
+    
+    // Otherwise, poll for Firebase availability with timeout
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait (50 * 100ms)
+    
+    const checkFirebase = setInterval(() => {
+      attempts++;
+      
+      if (typeof firebase !== 'undefined' && firebase.apps !== undefined) {
+        clearInterval(checkFirebase);
+        if (initializeFirebase()) {
+          resolve();
+        } else {
+          reject(new Error('Failed to initialize Firebase'));
+        }
+      } else if (attempts >= maxAttempts) {
+        clearInterval(checkFirebase);
+        reject(new Error('Firebase SDK failed to load'));
+      }
+    }, 100);
+  });
+}
 
 // Current user data
 let currentUser = null;
@@ -31,13 +101,30 @@ let currentUserData = null;
  * Check authentication status and handle redirects
  * UPDATED: Now checks for allowInfraction access
  */
-function checkAuthStatus() {
+async function checkAuthStatus() {
   const loading = document.getElementById('loading');
   const mainContent = document.getElementById('main-content');
   const loginLink = document.getElementById('login-link');
   const mobileLoginLink = document.getElementById('mobile-login-link');
   const adminLink = document.getElementById('admin-link');
   const mobileAdminLink = document.getElementById('mobile-admin-link');
+  
+  // Wait for Firebase to be ready
+  try {
+    await waitForFirebase();
+  } catch (error) {
+    console.error('Firebase initialization failed:', error);
+    if (loading) {
+      loading.innerHTML = `
+        <div class="loading-content">
+          <p style="color: #dc2626; margin-bottom: 1rem;">Erreur de chargement Firebase.</p>
+          <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">Veuillez rafraîchir la page.</p>
+          <button onclick="location.reload()" class="btn btn-primary">Rafraîchir</button>
+        </div>
+      `;
+    }
+    return;
+  }
   
   auth.onAuthStateChanged(async function(user) {
     if (user) {
@@ -203,6 +290,9 @@ function redirectToMain() {
  * @returns {Promise} Login result
  */
 async function loginUser(email, password) {
+  // Ensure Firebase is initialized before login attempt
+  await waitForFirebase();
+  
   try {
     const userCredential = await auth.signInWithEmailAndPassword(email, password);
     
@@ -242,6 +332,7 @@ async function handleLogout(e) {
   if (e) e.preventDefault();
   
   try {
+    await waitForFirebase();
     await auth.signOut();
     redirectToLogin();
   } catch (error) {
