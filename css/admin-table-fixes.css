@@ -1,0 +1,131 @@
+/* ========================================
+   ADMIN TABLE IMPROVEMENTS
+   Better column separation and readability
+   ======================================== */
+
+/* Table with vertical borders between columns */
+.data-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--theme-border, #e5e7eb);
+  /* Add right border for column separation */
+  border-right: 1px solid var(--theme-border, #e5e7eb);
+}
+
+/* Remove right border from last column */
+.data-table th:last-child,
+.data-table td:last-child {
+  border-right: none;
+}
+
+/* Header styling */
+.data-table th {
+  background-color: var(--color-gray-100, #f3f4f6);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-gray-700, #374151);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  border-top: 1px solid var(--theme-border, #e5e7eb);
+}
+
+/* First header cell - add left border */
+.data-table th:first-child {
+  border-left: 1px solid var(--theme-border, #e5e7eb);
+  border-top-left-radius: 8px;
+}
+
+/* Last header cell - rounded corner */
+.data-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Body cells */
+.data-table td {
+  font-size: 0.875rem;
+  color: var(--theme-text, #1f2937);
+  vertical-align: middle;
+}
+
+/* First body cell - add left border */
+.data-table td:first-child {
+  border-left: 1px solid var(--theme-border, #e5e7eb);
+}
+
+/* Last row - rounded corners */
+.data-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.data-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Alternating row colors for better readability */
+.data-table tbody tr:nth-child(even) {
+  background-color: var(--color-gray-50, #f9fafb);
+}
+
+/* Hover effect */
+.data-table tbody tr:hover {
+  background-color: #eef2ff;
+}
+
+/* Clickable row cursor */
+.data-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+/* Better badge spacing in table */
+.data-table .badge {
+  white-space: nowrap;
+}
+
+/* Action buttons column - center align */
+.data-table td:last-child {
+  text-align: center;
+}
+
+/* Date column - prevent wrapping */
+.data-table td:first-child {
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .data-table th,
+  .data-table td {
+    padding: 0.625rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  /* On mobile, use lighter borders */
+  .data-table th,
+  .data-table td {
+    border-right: 1px solid var(--color-gray-200, #e5e7eb);
+  }
+}
+
+/* Alternative style: Spaced columns without borders */
+/* Uncomment this section if you prefer spacing over borders */
+/*
+.data-table.spaced th,
+.data-table.spaced td {
+  border-right: none;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.data-table.spaced th:first-child,
+.data-table.spaced td:first-child {
+  padding-left: 1rem;
+}
+*/
