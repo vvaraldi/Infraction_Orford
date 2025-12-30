@@ -94,28 +94,27 @@ const TRAILS_DATA = {
     name: 'Remontées mécaniques',
     trails: [
       'Rapido',
-      'Télécabine hybride',
+      'Hybride',
       'Alfred-Desrochers',
       'Quad Giroux Nord',
-      'Tapis Giroux Nord 1',
-      'Tapis Giroux Nord 2',
+      'Tapis Giroux Nord',
       'Quad Giroux Est'
     ]
   },
   'randonnee-alpine': {
     name: 'Randonnée alpine',
     trails: [
-      'Le Chevreuil',
-      'La Tourterelle',
-      'Le Grand-Duc',
-      'La Crête',
-      'Le Lynx',
-      'Le Campagnol',
-      'L\'Hermine',
-      'L\'Alouette',
-      'L\'Urubu',
-      'La Carcajou',
-      'La Mille-Pattes'
+      'La tortue',
+      'Le Renard',
+      'Le tracé du Lynx',
+      'Le lièvre',
+      'Le campagnol',
+      'La mille-Pattes',
+      'L\'hermine',
+      'L\'alouette',
+      'L\'adams',
+      'La carcajou',
+      'L\'urubu'
     ]
   }
 };
