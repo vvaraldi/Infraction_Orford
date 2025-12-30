@@ -21,7 +21,7 @@ const TRAILS_DATA = {
       'Belette',
       'L\'Initiation',
       'Mini-Passe',
-      'Super Bas',
+      'Super',
       'Contour',
       'L\'Intrépide',
       'Passe de l\'Ours',
@@ -97,8 +97,9 @@ const TRAILS_DATA = {
       'Hybride',
       'Alfred-Desrochers',
       'Quad Giroux Nord',
-      'Tapis Giroux Nord',
-      'Quad Giroux Est'
+      'Quad Giroux Est',
+      'Tapis Giroux Nord 1',
+      'Tapis Giroux Nord 2'
     ]
   },
   'randonnee-alpine': {
