@@ -34,6 +34,132 @@
       background: rgba(255, 255, 255, 0.3);
       margin: 0 0.5rem;
     }
+    
+    /* QR Code Scanner Styles */
+    .qr-capture-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .qr-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    #qr-preview-container {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: var(--color-green-50, #f0fdf4);
+      border: 1px solid var(--color-green-200, #bbf7d0);
+      border-radius: 8px;
+    }
+    
+    .qr-data-display {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .qr-data-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-green-800, #166534);
+      text-transform: uppercase;
+    }
+    
+    .qr-data-value {
+      font-family: monospace;
+      font-size: 0.875rem;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 4px;
+      word-break: break-all;
+      border: 1px solid var(--color-green-200, #bbf7d0);
+    }
+    
+    .qr-image-preview {
+      max-width: 150px;
+      max-height: 150px;
+      object-fit: contain;
+      border-radius: 4px;
+      border: 1px solid var(--color-green-200, #bbf7d0);
+    }
+    
+    /* QR Scanner Modal */
+    .qr-scanner-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1001;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .qr-scanner-modal.active {
+      display: flex;
+    }
+    
+    .qr-scanner-container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .qr-scanner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--theme-primary, #1e40af);
+      color: white;
+    }
+    
+    .qr-scanner-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .qr-scanner-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+    
+    #qr-reader {
+      width: 100%;
+    }
+    
+    #qr-reader video {
+      width: 100% !important;
+      border-radius: 0;
+    }
+    
+    .qr-scanner-footer {
+      padding: 1rem;
+      text-align: center;
+      background: var(--color-gray-50, #f9fafb);
+      border-top: 1px solid var(--theme-border, #e5e7eb);
+    }
+    
+    .qr-scanner-hint {
+      font-size: 0.875rem;
+      color: var(--theme-text-light, #6b7280);
+      margin: 0;
+    }
   </style>
 </head>
 
@@ -159,6 +285,26 @@
           </div>
         </div>
         
+        <!-- QR Code Scanner -->
+        <div class="form-group">
+          <label class="form-label">QR Code du pass <span class="required-star">*</span> <span class="optional-label">(ou nom obligatoire)</span></label>
+          <div class="qr-capture-container">
+            <div class="qr-buttons">
+              <button type="button" class="btn btn-secondary" id="scan-qr-btn">
+                📱 Scanner un QR Code
+              </button>
+            </div>
+            <div id="qr-preview-container">
+              <div class="qr-data-display">
+                <span class="qr-data-label">Données du QR Code</span>
+                <span class="qr-data-value" id="qr-data-display">-</span>
+              </div>
+              <img id="qr-image-preview" class="qr-image-preview" alt="QR Code" style="display: none;">
+              <button type="button" class="btn btn-danger btn-sm" id="remove-qr-btn">✕ Supprimer le QR Code</button>
+            </div>
+          </div>
+        </div>
+        
         <!-- Infraction type -->
         <div class="form-group">
           <label class="form-label" for="fault-select">Infraction <span class="required-star">*</span></label>
@@ -238,6 +384,20 @@
     <!-- Status messages -->
     <div id="status-messages" class="status-messages"></div>
     
+  </div>
+  
+  <!-- QR Scanner Modal -->
+  <div class="qr-scanner-modal" id="qr-scanner-modal">
+    <div class="qr-scanner-container">
+      <div class="qr-scanner-header">
+        <h3 class="qr-scanner-title">📱 Scanner le QR Code</h3>
+        <button type="button" class="qr-scanner-close" id="qr-scanner-close">&times;</button>
+      </div>
+      <div id="qr-reader"></div>
+      <div class="qr-scanner-footer">
+        <p class="qr-scanner-hint">Placez le QR Code du pass dans le cadre</p>
+      </div>
+    </div>
   </div>
   
   <!-- Firebase Scripts -->
