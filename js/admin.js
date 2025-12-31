@@ -271,7 +271,10 @@ class AdminManager {
             <div class="detail-section">
               <h4>Informations générales</h4>
               <p><strong>Date:</strong> ${date}</p>
-              <p><strong>Contrevenant:</strong> ${escapeHtml(data.offenderName) || '-'}</p>
+              <div class="form-group" style="margin: 0.5rem 0;">
+                <label class="form-label" for="admin-offender-name"><strong>Contrevenant:</strong></label>
+                <input type="text" class="form-input" id="admin-offender-name" value="${escapeHtml(data.offenderName) || ''}" placeholder="Nom du contrevenant">
+              </div>
               <p><strong>Type d'infraction:</strong> ${escapeHtml(faultDisplay)}</p>
               <p><strong>Lieu:</strong> ${escapeHtml(location)}</p>
               <p><strong>Pratique:</strong> ${escapeHtml(data.practice) || '-'}</p>
@@ -339,16 +342,20 @@ class AdminManager {
       const commentsEl = document.getElementById('admin-comments');
       const comments = commentsEl ? commentsEl.value : '';
       
+      const offenderNameEl = document.getElementById('admin-offender-name');
+      const offenderName = offenderNameEl ? offenderNameEl.value.trim() : '';
+      
       await db.collection('infractions').doc(this.currentInfractionId).update({
+        offenderName: offenderName,
         commentsAndSanctionAdmin: comments,
         timestampModificationAdmin: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      alert('Sanction enregistrée avec succès');
+      alert('Modifications enregistrées avec succès');
       this.loadInfractions();
       
     } catch (error) {
-      console.error('Error saving sanction:', error);
+      console.error('Error saving report:', error);
       alert('Erreur lors de l\'enregistrement');
     }
   }
