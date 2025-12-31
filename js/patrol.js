@@ -10,6 +10,12 @@ class PatrolForm {
     this.photoFile = null;
     this.photoUrl = null;
     
+    // QR Code related properties
+    this.qrCodeData = null;
+    this.qrCodeImageData = null; // Base64 image data
+    this.qrCodeImageUrl = null;  // Firebase Storage URL (for existing reports)
+    this.html5QrCode = null;
+    
     // Wait for authentication
     document.addEventListener('userAuthenticated', (e) => {
       this.userData = e.detail;
@@ -38,7 +44,7 @@ class PatrolForm {
     this.offenceDate = document.getElementById('offence-date');
     this.offenceTime = document.getElementById('offence-time');
     this.offenderName = document.getElementById('offender-name');
-    this.faultSelect = document.getElementById('fault-select'); // NEW: Fault dropdown
+    this.faultSelect = document.getElementById('fault-select');
     this.sectorSelect = document.getElementById('sector-select');
     this.trailSelect = document.getElementById('trail-select');
     this.offPiste = document.getElementById('off-piste');
@@ -51,6 +57,16 @@ class PatrolForm {
     this.photoPreviewContainer = document.getElementById('photo-preview-container');
     this.photoPreview = document.getElementById('photo-preview');
     this.removePhotoBtn = document.getElementById('remove-photo-btn');
+    
+    // QR Code elements
+    this.scanQrBtn = document.getElementById('scan-qr-btn');
+    this.qrScannerModal = document.getElementById('qr-scanner-modal');
+    this.qrScannerClose = document.getElementById('qr-scanner-close');
+    this.qrReader = document.getElementById('qr-reader');
+    this.qrPreviewContainer = document.getElementById('qr-preview-container');
+    this.qrDataDisplay = document.getElementById('qr-data-display');
+    this.qrImagePreview = document.getElementById('qr-image-preview');
+    this.removeQrBtn = document.getElementById('remove-qr-btn');
   }
   
   bindEvents() {
@@ -70,6 +86,18 @@ class PatrolForm {
     this.capturePhotoBtn.addEventListener('click', () => this.photoInput.click());
     this.photoInput.addEventListener('change', (e) => this.handlePhotoSelect(e));
     this.removePhotoBtn.addEventListener('click', () => this.removePhoto());
+    
+    // QR Code events
+    this.scanQrBtn.addEventListener('click', () => this.openQrScanner());
+    this.qrScannerClose.addEventListener('click', () => this.closeQrScanner());
+    this.removeQrBtn.addEventListener('click', () => this.removeQrCode());
+    
+    // Close QR modal on background click
+    this.qrScannerModal.addEventListener('click', (e) => {
+      if (e.target === this.qrScannerModal) {
+        this.closeQrScanner();
+      }
+    });
     
     // Form submission
     this.form.addEventListener('submit', (e) => this.handleSubmit(e));
@@ -174,7 +202,7 @@ class PatrolForm {
     
     this.offenderName.value = data.offenderName || '';
     
-    // Populate fault select (NEW)
+    // Populate fault select
     if (this.faultSelect) {
       this.faultSelect.value = data.fault || '';
     }
@@ -207,6 +235,23 @@ class PatrolForm {
       this.capturePhotoBtn.textContent = '📷 Changer la photo';
     } else {
       this.removePhoto();
+    }
+    
+    // Handle QR Code
+    if (data.offenderQRCode) {
+      this.qrCodeData = data.offenderQRCode;
+      this.qrCodeImageUrl = data.offenderQRImageUrl || null;
+      this.qrDataDisplay.textContent = data.offenderQRCode;
+      this.qrPreviewContainer.style.display = 'flex';
+      this.scanQrBtn.textContent = '📱 Changer le QR Code';
+      
+      // Show QR image if available
+      if (data.offenderQRImageUrl) {
+        this.qrImagePreview.src = data.offenderQRImageUrl;
+        this.qrImagePreview.style.display = 'block';
+      }
+    } else {
+      this.removeQrCode();
     }
     
     showMessage('Rapport chargé. Modifiez les champs nécessaires et enregistrez.', 'info');
@@ -247,6 +292,8 @@ class PatrolForm {
       this.offPiste.checked = false;
     }
   }
+  
+  // ==================== PHOTO HANDLING ====================
   
   async handlePhotoSelect(e) {
     const file = e.target.files[0];
@@ -291,6 +338,166 @@ class PatrolForm {
     return await snapshot.ref.getDownloadURL();
   }
   
+  // ==================== QR CODE HANDLING ====================
+  
+  /**
+   * Open the QR code scanner modal
+   */
+  openQrScanner() {
+    this.qrScannerModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Initialize the QR scanner
+    this.startQrScanner();
+  }
+  
+  /**
+   * Close the QR code scanner modal
+   */
+  closeQrScanner() {
+    this.stopQrScanner();
+    this.qrScannerModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  /**
+   * Start the QR code scanner
+   */
+  async startQrScanner() {
+    try {
+      this.html5QrCode = new Html5Qrcode('qr-reader');
+      
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
+      };
+      
+      await this.html5QrCode.start(
+        { facingMode: 'environment' }, // Use back camera
+        config,
+        (decodedText, decodedResult) => this.onQrCodeSuccess(decodedText, decodedResult),
+        (errorMessage) => {
+          // Ignore scan errors (no QR found in frame)
+        }
+      );
+      
+    } catch (error) {
+      console.error('Error starting QR scanner:', error);
+      showMessage('Erreur lors du démarrage du scanner. Vérifiez les permissions de la caméra.', 'error');
+      this.closeQrScanner();
+    }
+  }
+  
+  /**
+   * Stop the QR code scanner
+   */
+  async stopQrScanner() {
+    if (this.html5QrCode && this.html5QrCode.isScanning) {
+      try {
+        await this.html5QrCode.stop();
+      } catch (error) {
+        console.error('Error stopping QR scanner:', error);
+      }
+    }
+  }
+  
+  /**
+   * Handle successful QR code scan
+   * @param {string} decodedText - The decoded QR code text
+   * @param {object} decodedResult - Additional scan result info
+   */
+  onQrCodeSuccess(decodedText, decodedResult) {
+    // Store the decoded data
+    this.qrCodeData = decodedText;
+    
+    // Capture screenshot from video
+    this.captureQrImage();
+    
+    // Update UI
+    this.qrDataDisplay.textContent = decodedText;
+    this.qrPreviewContainer.style.display = 'flex';
+    this.scanQrBtn.textContent = '📱 Changer le QR Code';
+    
+    // Close the scanner
+    this.closeQrScanner();
+    
+    showMessage('QR Code scanné avec succès!', 'success');
+  }
+  
+  /**
+   * Capture an image from the QR scanner video feed
+   */
+  captureQrImage() {
+    try {
+      const video = this.qrReader.querySelector('video');
+      if (video) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        // Store as base64
+        this.qrCodeImageData = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Show preview
+        this.qrImagePreview.src = this.qrCodeImageData;
+        this.qrImagePreview.style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error capturing QR image:', error);
+      // Not critical - continue without image
+    }
+  }
+  
+  /**
+   * Remove the scanned QR code
+   */
+  removeQrCode() {
+    this.qrCodeData = null;
+    this.qrCodeImageData = null;
+    this.qrCodeImageUrl = null;
+    this.qrDataDisplay.textContent = '-';
+    this.qrPreviewContainer.style.display = 'none';
+    this.qrImagePreview.style.display = 'none';
+    this.qrImagePreview.src = '';
+    this.scanQrBtn.textContent = '📱 Scanner un QR Code';
+  }
+  
+  /**
+   * Upload QR code image to Firebase Storage
+   * @returns {Promise<string|null>} The download URL or null
+   */
+  async uploadQrImage() {
+    // If we have an existing URL and no new image data, return existing URL
+    if (!this.qrCodeImageData && this.qrCodeImageUrl) {
+      return this.qrCodeImageUrl;
+    }
+    
+    // If no image data, return null
+    if (!this.qrCodeImageData) return null;
+    
+    try {
+      // Convert base64 to blob
+      const response = await fetch(this.qrCodeImageData);
+      const blob = await response.blob();
+      
+      const timestamp = Date.now();
+      const fileName = `infractions/${getCurrentUserId()}/${timestamp}_qrcode.jpg`;
+      const storageRef = storage.ref(fileName);
+      
+      const snapshot = await storageRef.put(blob);
+      return await snapshot.ref.getDownloadURL();
+      
+    } catch (error) {
+      console.error('Error uploading QR image:', error);
+      return null;
+    }
+  }
+  
+  // ==================== VALIDATION ====================
+  
   /**
    * Get display name for fault type
    * @param {string} faultId - Fault ID
@@ -310,7 +517,7 @@ class PatrolForm {
   }
   
   /**
-   * Validate the form - date, time, (offender name OR photo), fault, and sector are required
+   * Validate the form - date, time, (offender name OR QR code), fault, and sector are required
    */
   validateForm() {
     let isValid = true;
@@ -334,18 +541,18 @@ class PatrolForm {
       this.offenceTime.classList.remove('is-invalid');
     }
     
-    // Check offender name OR photo (at least one required)
+    // Check offender name OR QR code (at least one required)
     const hasName = this.offenderName.value.trim() !== '';
-    const hasPhoto = this.photoFile !== null || this.photoUrl !== null;
+    const hasQrCode = this.qrCodeData !== null && this.qrCodeData !== '';
     
-    if (!hasName && !hasPhoto) {
+    if (!hasName && !hasQrCode) {
       isValid = false;
-      errors.push('Le nom du contrevenant OU une photo est requis');
+      errors.push('Le nom du contrevenant OU un QR Code est requis');
       this.offenderName.classList.add('is-invalid');
-      this.capturePhotoBtn.classList.add('is-invalid');
+      this.scanQrBtn.classList.add('is-invalid');
     } else {
       this.offenderName.classList.remove('is-invalid');
-      this.capturePhotoBtn.classList.remove('is-invalid');
+      this.scanQrBtn.classList.remove('is-invalid');
     }
     
     // Check fault type (required)
@@ -374,6 +581,8 @@ class PatrolForm {
     return isValid;
   }
   
+  // ==================== FORM SUBMISSION ====================
+  
   async handleSubmit(e) {
     e.preventDefault();
     
@@ -390,6 +599,9 @@ class PatrolForm {
       // Upload photo if exists
       const photoUrl = await this.uploadPhoto();
       
+      // Upload QR code image if exists
+      const qrImageUrl = await this.uploadQrImage();
+      
       // Combine date and time
       const offenceDateTime = new Date(`${this.offenceDate.value}T${this.offenceTime.value}`);
       
@@ -400,8 +612,10 @@ class PatrolForm {
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
         offenderImageUrl: photoUrl || null,
-        fault: this.faultSelect.value, // NEW: Fault field
-        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value), // NEW: Display name for easier reading
+        offenderQRCode: this.qrCodeData || null,
+        offenderQRImageUrl: qrImageUrl || null,
+        fault: this.faultSelect.value,
+        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value),
         sector: this.sectorSelect.value || null,
         trail: this.trailSelect.value || null,
         offPiste: this.offPiste.checked,
@@ -446,6 +660,9 @@ class PatrolForm {
       // Upload new photo if exists
       const photoUrl = await this.uploadPhoto();
       
+      // Upload QR code image if exists
+      const qrImageUrl = await this.uploadQrImage();
+      
       // Combine date and time
       const offenceDateTime = new Date(`${this.offenceDate.value}T${this.offenceTime.value}`);
       
@@ -454,8 +671,10 @@ class PatrolForm {
         offenceTimestamp: firebase.firestore.Timestamp.fromDate(offenceDateTime),
         offenderName: this.offenderName.value.trim(),
         offenderImageUrl: photoUrl || this.photoUrl || null,
-        fault: this.faultSelect.value, // NEW: Fault field
-        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value), // NEW: Display name
+        offenderQRCode: this.qrCodeData || null,
+        offenderQRImageUrl: qrImageUrl || null,
+        fault: this.faultSelect.value,
+        faultDisplayName: this.getFaultDisplayName(this.faultSelect.value),
         sector: this.sectorSelect.value || null,
         trail: this.trailSelect.value || null,
         offPiste: this.offPiste.checked,
@@ -516,7 +735,7 @@ class PatrolForm {
     // Reset fields
     this.setDefaultValues();
     this.offenderName.value = '';
-    this.faultSelect.value = ''; // NEW: Reset fault select
+    this.faultSelect.value = '';
     this.sectorSelect.value = '';
     this.trailSelect.innerHTML = '<option value="">-- Sélectionner d\'abord un secteur --</option>';
     this.trailSelect.disabled = true;
@@ -528,12 +747,16 @@ class PatrolForm {
     // Reset photo
     this.removePhoto();
     
+    // Reset QR code
+    this.removeQrCode();
+    
     // Remove validation classes
     this.offenceDate.classList.remove('is-invalid');
     this.offenceTime.classList.remove('is-invalid');
     this.offenderName.classList.remove('is-invalid');
     this.faultSelect.classList.remove('is-invalid');
     this.sectorSelect.classList.remove('is-invalid');
+    this.scanQrBtn.classList.remove('is-invalid');
     this.capturePhotoBtn.classList.remove('is-invalid');
   }
 }
