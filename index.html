@@ -141,12 +141,12 @@
         
         <!-- Offender info -->
         <div class="form-group">
-          <label class="form-label" for="offender-name">Contrevenant <span class="required-star">* </span><span class="optional-label">(nom ou photo du pass sont obligatoire)</span></label>
+          <label class="form-label" for="offender-name">Contrevenant <span class="required-star">* </span><span class="optional-label">(nom ou QR code obligatoire)</span></label>
           <input type="text" class="form-input" id="offender-name" placeholder="Nom de famille puis Prénom" required>
         </div>
         
         <div class="form-group">
-          <label class="form-label">Photo <span class="optional-label">(mandatory si pas de nom entré)</span></label>
+          <label class="form-label">Photo <span class="optional-label">(optionnel)</span></label>
           <div class="photo-capture-container">
             <input type="file" id="offender-photo" accept="image/*" capture="environment" style="display: none;">
             <button type="button" class="btn btn-secondary" id="capture-photo-btn">
@@ -245,6 +245,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+  
+  <!-- QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   
   <!-- Application Scripts -->
   <script src="js/common.js"></script>
