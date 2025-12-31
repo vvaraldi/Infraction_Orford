@@ -197,10 +197,16 @@ class AdminManager {
       // Use faultDisplayName if available, otherwise use getFaultDisplayName
       const faultDisplay = data.faultDisplayName || this.getFaultDisplayName(data.fault);
       
+      // Show offender name or QR code indicator
+      let offenderDisplay = escapeHtml(data.offenderName) || '-';
+      if (!data.offenderName && data.offenderQRCode) {
+        offenderDisplay = '<span class="badge badge-info">QR Code</span>';
+      }
+      
       html += `
         <tr class="clickable-row" data-id="${data.id}">
           <td>${date}</td>
-          <td>${escapeHtml(data.offenderName) || '-'}</td>
+          <td>${offenderDisplay}</td>
           <td>${escapeHtml(faultDisplay)}</td>
           <td>${escapeHtml(location)}</td>
           <td>${escapeHtml(data.patrolName) || '-'}</td>
@@ -236,11 +242,27 @@ class AdminManager {
       // Use faultDisplayName if available, otherwise use getFaultDisplayName
       const faultDisplay = data.faultDisplayName || this.getFaultDisplayName(data.fault);
       
-      let imageHtml = '';
+      // Photo HTML
+      let photoHtml = '';
       if (data.offenderImageUrl) {
-        imageHtml = `<img src="${data.offenderImageUrl}" alt="Photo" class="infraction-photo">`;
+        photoHtml = `<img src="${data.offenderImageUrl}" alt="Photo" class="infraction-photo">`;
       } else {
-        imageHtml = '<p class="text-muted">Aucune photo</p>';
+        photoHtml = '<p class="text-muted">Aucune photo</p>';
+      }
+      
+      // QR Code HTML
+      let qrCodeHtml = '';
+      if (data.offenderQRCode) {
+        qrCodeHtml = `
+          <div class="qr-code-display">
+            <code>${escapeHtml(data.offenderQRCode)}</code>
+          </div>
+        `;
+        if (data.offenderQRImageUrl) {
+          qrCodeHtml += `<img src="${data.offenderQRImageUrl}" alt="QR Code" class="infraction-photo" style="max-width: 150px; margin-top: 0.5rem;">`;
+        }
+      } else {
+        qrCodeHtml = '<p class="text-muted">Aucun QR Code</p>';
       }
       
       if (this.infractionModalBody) {
@@ -258,6 +280,11 @@ class AdminManager {
               ${data.modifiedAt ? `<p><strong>Modifié le:</strong> ${formatDate(data.modifiedAt)}</p>` : ''}
             </div>
             
+            <div class="detail-section">
+              <h4>QR Code du pass</h4>
+              ${qrCodeHtml}
+            </div>
+            
             ${data.offenceType ? `
             <div class="detail-section">
               <h4>Commentaires / Description</h4>
@@ -268,7 +295,7 @@ class AdminManager {
             <div class="detail-section">
               <h4>Photo</h4>
               <div class="photos-grid">
-                ${imageHtml}
+                ${photoHtml}
               </div>
             </div>
             
