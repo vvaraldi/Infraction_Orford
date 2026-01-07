@@ -110,8 +110,16 @@ class PatrolForm {
     
     // Set current date and time
     const now = new Date();
-    this.offenceDate.value = now.toISOString().split('T')[0];
-    this.offenceTime.value = now.toTimeString().slice(0, 5);
+    
+    // FIX: Use local date components instead of toISOString() which uses UTC
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    this.offenceDate.value = `${year}-${month}-${day}`;
+    
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.offenceTime.value = `${hours}:${minutes}`;
   }
   
   async loadUserInfractions() {
@@ -706,8 +714,16 @@ class PatrolForm {
     
     // Reset timestamps
     const now = new Date();
-    this.offenceDate.value = now.toISOString().split('T')[0];
-    this.offenceTime.value = now.toTimeString().slice(0, 5);
+    
+    // FIX: Use local date components instead of toISOString() which uses UTC
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    this.offenceDate.value = `${year}-${month}-${day}`;
+    
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.offenceTime.value = `${hours}:${minutes}`;
     
     // Show/hide buttons
     this.saveBtn.style.display = '';
