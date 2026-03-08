@@ -16,7 +16,7 @@ class AdminManager {
       this.userData = e.detail;
       
       // Check if user is admin
-      if (this.userData.role !== 'admin') {
+      if (this.userData.role !== 'admin' && this.userData.role !== 'system_admin' ) {
         alert('Accès non autorisé. Vous devez être administrateur.');
         window.location.href = '../index.html';
         return;

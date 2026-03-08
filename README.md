@@ -1,10 +1,9 @@
 # Infraction_Orford
 
 
+## Prochaines étapes
+Rien pour le moment
 
-Priorité 1
-To be done : Default date is the date at time zone london !
-
-Priorité 2
+Priorité 4
 Faire le lien entre code QR et nom...
 
